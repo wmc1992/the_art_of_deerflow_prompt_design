@@ -1,0 +1,94 @@
+site_name: DeerFlow Prompt 设计艺术
+site_description: 基于 DeerFlow v2.0.0-rc1 的 Prompt 工程深度解析——面向算法工程师的实践指南
+site_author: DeerFlow 研究团队
+docs_dir: docs
+
+theme:
+  name: material
+  language: zh
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: 切换到深色模式
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: 切换到浅色模式
+  font:
+    text: Noto Sans SC
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search:
+      lang: zh
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+      title: 本页目录
+
+nav:
+  - 首页: index.md
+  - 前言:
+    - 序言：为什么要读一个框架的 Prompt: preface.md
+    - 如何使用本书: how-to-read.md
+  - 第一部分：基础认知:
+    - 第 1 章：DeerFlow 系统概览与 Prompt 地图: part1-foundation/ch01-overview.md
+    - 第 2 章：Prompt 工程核心原则: part1-foundation/ch02-core-principles.md
+    - 第 3 章：静态与动态 Prompt 的设计哲学: part1-foundation/ch03-static-dynamic.md
+  - 第二部分：主系统 Prompt 深度解析:
+    - 第 4 章：角色声明与身份锚定: part2-core-system-prompt/ch04-role-soul.md
+    - 第 5 章：思维风格与澄清系统: part2-core-system-prompt/ch05-thinking-clarification.md
+    - 第 6 章：技能系统与延迟工具: part2-core-system-prompt/ch06-skills-deferred.md
+    - 第 7 章：约束体系：工作目录、回复风格、引用与关键提醒: part2-core-system-prompt/ch07-constraints.md
+  - 第三部分：子系统 Prompt 解析:
+    - 第 8 章：子 Agent 编排——P-02 的并行设计哲学: part3-subsystem-prompts/ch08-subagent.md
+    - 第 9 章：记忆系统——P-10 的知识提炼机制: part3-subsystem-prompts/ch09-memory.md
+    - 第 10 章：安全防线——Loop 检测、TodoList 与标题生成: part3-subsystem-prompts/ch10-safety-tools.md
+  - 第四部分：设计模式与综合提升:
+    - 第 11 章：七大可复用设计模式: part4-design-patterns/ch11-patterns.md
+    - 第 12 章：从 DeerFlow 到你的系统——实战迁移指南: part4-design-patterns/ch12-migration.md
+  - 附录:
+    - 附录 A：全部 Prompt 英文原文（P-01 至 P-25）: appendix/appA-prompts-en.md
+    - 附录 B：全部 Prompt 中文译注（P-01 至 P-25）: appendix/appB-prompts-zh.md
+    - 附录 C：全部技能文件英文原文（S-01 至 S-22）: appendix/appC-skills-en.md
+    - 附录 D：全部技能文件中文译注（S-01 至 S-22）: appendix/appD-skills-zh.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bytedance/deer-flow
+      name: DeerFlow on GitHub
