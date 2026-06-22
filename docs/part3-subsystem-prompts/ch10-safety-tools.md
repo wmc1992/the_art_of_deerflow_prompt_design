@@ -34,12 +34,16 @@ Loop 检测中间件实现了两层检测机制：
 [LOOP DETECTED] You are repeating the same tool calls. Stop calling tools and produce your final answer now. If you cannot complete the task, summarize what you accomplished so far.
 ```
 
+> **中文附注**：[检测到循环] 你正在重复相同的工具调用。立即停止调用工具并给出最终答案。如果你无法完成任务，请总结你到目前为止完成的内容。
+
 这是一条 38 个 token 的干预消息，用三句话完成了三件事：
 
 **第一句**（诊断）：
 ```
 [LOOP DETECTED] You are repeating the same tool calls.
 ```
+
+> **中文附注**：[检测到循环] 你正在重复相同的工具调用。
 
 方括号标记 `[LOOP DETECTED]` 是机器可读的信号前缀，也是系统日志中可以用于追踪的关键词。`"You are repeating"`是直接的陈述句，没有委婉或模糊。
 
@@ -48,12 +52,16 @@ Loop 检测中间件实现了两层检测机制：
 Stop calling tools and produce your final answer now.
 ```
 
+> **中文附注**：立即停止调用工具并给出最终答案。
+
 `Stop` 是命令式，`now` 强调立即性。这不是建议，而是一个紧急命令。
 
 **第三句**（出路）：
 ```
 If you cannot complete the task, summarize what you accomplished so far.
 ```
+
+> **中文附注**：如果你无法完成任务，请总结你到目前为止完成的内容。
 
 这句话非常重要——它为模型提供了一个"降级路径"。当模型陷入循环时，往往是因为它无法达到预期目标（找不到某个文件、搜索结果不满意等），而强制它"立即给出最终答案"如果没有出路会导致模型继续尝试工具调用。
 
@@ -67,11 +75,15 @@ If you cannot complete the task, summarize what you accomplished so far.
 [LOOP DETECTED] You have called {tool_name} {count} times without producing a final answer. Stop calling tools and produce your final answer now. If you cannot complete the task, summarize what you accomplished so far.
 ```
 
+> **中文附注**：[检测到循环] 你已调用 `{tool_name}` `{count}` 次而未给出最终答案。立即停止调用工具并给出最终答案。如果你无法完成任务，请总结你到目前为止完成的内容。
+
 P-14 是 P-13 的频率版本，核心差异在第一句：
 
 ```
 You have called {tool_name} {count} times without producing a final answer.
 ```
+
+> **中文附注**：你已调用 `{tool_name}` `{count}` 次而未给出最终答案。
 
 两个格式化变量：
 - `{tool_name}`：具体的工具名（如 `read_file`、`web_search`）
@@ -87,11 +99,15 @@ You have called {tool_name} {count} times without producing a final answer.
 [FORCED STOP] Repeated tool calls exceeded the safety limit. Producing final answer with results collected so far.
 ```
 
+> **中文附注**：[强制停止] 重复工具调用超出安全限制。正在使用目前收集到的结果生成最终答案。
+
 P-15 与 P-13 的差异不只是标签从 `[LOOP DETECTED]` 变为 `[FORCED STOP]`：
 
 ```
 Producing final answer with results collected so far.
 ```
+
+> **中文附注**：正在使用目前收集到的结果生成最终答案。
 
 P-13 是命令（`Stop calling tools and produce your final answer`），P-15 是陈述（`Producing final answer`）。这个语态变化很微妙：
 
@@ -116,6 +132,8 @@ stripped_msg = last_msg.model_copy(update=self._build_hard_stop_update(last_msg,
 ```
 [FORCED STOP] Tool {tool_name} called {count} times — exceeded the per-tool safety limit. Producing final answer with results collected so far.
 ```
+
+> **中文附注**：[强制停止] 工具 `{tool_name}` 被调用了 `{count}` 次——超过了每工具安全限制。正在使用目前收集到的结果生成最终答案。
 
 P-16 与 P-15 的关系，等同于 P-14 与 P-13 的关系：通用的强制停止 → 带具体工具名和次数的频率强制停止。
 
@@ -178,6 +196,26 @@ Writing todos takes time and tokens - use it when helpful for managing complex p
 </todo_list_system>
 ```
 
+> **中文附注**：
+>
+> `<todo_list_system>`
+> 你有访问 `write_todos` 工具的权限，帮助你管理和追踪复杂的多步目标。
+>
+> **关键规则**：
+> - 完成每个步骤后立即将 todo 标记为已完成——不得批量完成
+> - 任何时候保持**恰好一个**任务为 `in_progress`（除非任务可以并行运行）
+> - 工作时实时更新 todo 列表——让用户了解你的进度
+> - 不得对简单任务（< 3 步）使用此工具——直接完成它们
+>
+> **何时使用**：专为需要系统性追踪的复杂目标设计——需要 3+ 个不同步骤的多步任务、需要仔细规划的非平凡任务、用户明确要求 todo 列表、用户提供多个任务、计划可能需要根据中间结果修订。
+>
+> **何时不使用**：单一直接的任务、平凡任务（< 3 步）、纯粹的对话或信息性请求、方法明显的简单工具调用。
+>
+> **最佳实践**：将复杂任务拆分为更小的可操作步骤；使用清晰、描述性的任务名称；移除不再相关的任务；添加实现过程中发现的新任务；随着了解加深，不要害怕修订 todo 列表。
+>
+> **任务管理**：编写 todo 需要时间和 token——在管理复杂问题时使用，而非简单请求。
+> `</todo_list_system>`
+
 ### P-08 的注入方式
 
 P-08 不是 P-01 的一部分。它由 `TodoMiddleware` 以独立的 `SystemMessage` 形式追加到消息链中，只有当 `is_plan_mode=True` 时才激活：
@@ -197,11 +235,15 @@ messages = [SystemMessage(content=self.system_prompt)] + existing_messages
 - Update the todo list in REAL-TIME as you work - this gives users visibility into your progress
 ```
 
+> **中文附注**：工作时实时更新 todo 列表——这让用户了解你的进度。
+
 `gives users visibility into your progress` 解释了为什么要实时更新，而不只是说"必须实时更新"。这是后果驱动约束的另一个例子：告诉模型实时更新的**用户价值**（让用户看到进度），而不只是说"规则是这样"。
 
 ```
 - Mark todos as completed IMMEDIATELY after finishing each step - do NOT batch completions
 ```
+
+> **中文附注**：完成每个步骤后立即将 todo 标记为已完成——不得批量完成。
 
 `do NOT batch completions` 预防了一个具体的反模式：模型完成了 5 个步骤之后，统一把这 5 个都标为完成。这种批量更新破坏了进度可视化的价值——用户在 5 步完成之前看到的都是一片"waiting"状态，最后突然全部变成"done"。
 
@@ -273,6 +315,26 @@ Being proactive with task management demonstrates thoroughness and ensures all r
 **Remember**: If you only need a few tool calls to complete a task and it's clear what to do, it's better to just do the task directly and NOT use this tool at all.
 ```
 
+> **中文附注**：
+>
+> 使用此工具为复杂工作会话创建和管理结构化任务列表。
+>
+> **重要**：只对复杂任务（3+ 步）使用此工具。对于简单请求，直接完成工作。
+>
+> **何时使用**：（1）复杂多步任务（需要 3 个或以上不同步骤）；（2）非平凡任务（需要仔细规划或多项操作）；（3）用户明确要求 todo 列表；（4）用户提供多个任务清单；（5）动态规划（计划可能需要根据中间结果更新）。
+>
+> **何时不使用**：任务简单且不足 3 步；任务平凡且追踪无益；任务纯属对话或信息性；做什么一目了然、直接做即可。
+>
+> **使用方式**：开始任务前标为 `in_progress`；完成后立即标为 `completed`；根据需要添加/删除/更新任务；可一次进行多项更新。
+>
+> **任务状态**：`pending`（未开始）/ `in_progress`（进行中，并行任务可以有多个）/ `completed`（已成功完成）。
+>
+> **任务完成要求**：**关键**：只有在**完全**完成任务时才将其标记为已完成。以下情况不得标为完成：存在未解决问题或错误；工作部分完成或不完整；遇到阻碍完成的障碍；无法找到必要资源或依赖项；质量标准未达到。如受阻，将任务保持为 `in_progress` 并创建新任务描述需要解决的问题。
+>
+> **最佳实践**：创建具体可操作的任务；拆分复杂任务；使用清晰描述性的任务名称；实时更新状态；完成后立即标记（不批量）；移除不再相关的任务；写 todo 后立即将第一个任务标为 `in_progress`；除非全部完成，始终保持至少一个 `in_progress`。
+>
+> **记住**：如果只需几次工具调用就能完成任务且做什么一目了然，直接做更好，不必使用此工具。
+
 ### P-09 的"任务完成标准"设计
 
 P-09 中最细致的部分是任务完成标准：
@@ -288,6 +350,17 @@ Never mark a task as completed if:
 - Quality standards haven't been met
 ```
 
+> **中文附注**：
+>
+> **关键**：只有在**完全**完成任务时才将其标记为已完成。
+>
+> 以下情况不得将任务标记为已完成：
+> - 存在未解决的问题或错误
+> - 工作部分完成或不完整
+> - 遇到阻碍完成的障碍
+> - 无法找到必要的资源或依赖项
+> - 质量标准未达到
+
 这五个"不应标为完成"的条件覆盖了模型可能错误标为"完成"的主要场景。
 
 特别值得注意的是最后一条：
@@ -299,6 +372,8 @@ Never mark a task as completed if:
 这是一个主观标准，比其他四条都更难以客观评估。把它明确列出，是在提醒模型不要仅仅因为"我执行了这个步骤"就标为完成——还需要评估执行结果的质量。
 
 `If blocked, keep the task as in_progress and create a new task describing what needs to be resolved.`
+
+> **中文附注**：如受阻，将任务保持为 `in_progress` 并创建新任务描述需要解决的问题。
 
 这条规则提供了被阻塞时的标准处理方式：不是放弃任务，而是创建一个专门描述阻塞原因的新任务。这保持了进度可视化的完整性，同时也给用户提供了调试信息。
 
@@ -313,6 +388,14 @@ Assistant: {assistant_msg}
 
 Return ONLY the title, no quotes, no explanation.
 ```
+
+> **中文附注**：
+>
+> 为这次对话生成一个简洁的标题（最多 `{max_words}` 个词）。
+> 用户：`{user_msg}`
+> 助手：`{assistant_msg}`
+>
+> 只返回标题，不加引号，不加解释。
 
 默认参数：`max_words=6`，`max_chars=60`。
 

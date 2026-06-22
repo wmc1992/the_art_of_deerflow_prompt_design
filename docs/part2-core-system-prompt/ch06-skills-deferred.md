@@ -35,6 +35,30 @@ You have access to skills that provide optimized workflows for specific tasks. E
 </skill_system>
 ```
 
+> **中文附注**：
+>
+> ```
+> <skill_system>
+> 你有访问技能的权限，这些技能为特定任务提供优化的工作流程。每个技能包含最佳实践、框架和对额外资源的引用。
+>
+> **渐进式加载模式：**
+> 1. 当用户查询匹配技能的使用场景时，立即使用下方技能标签中提供的 path 属性对技能主文件调用 `read_file`
+> 2. 阅读并理解技能的工作流程和指令
+> 3. 技能文件包含对同一文件夹下外部资源的引用
+> 4. 仅在执行过程中需要时才加载引用的资源
+> 5. 精确遵循技能的指令
+>
+> **显式斜杠技能激活：**
+> - 如果用户以 `/<skill-name>` 开始请求，表示明确请求当前轮次使用该技能
+> - 在选择通用工作流程之前，遵循激活的技能
+> - 运行时会为显式斜杠激活注入激活的技能内容；除非注入的技能引用了你需要的支持资源，否则不要再次对该 SKILL.md 调用 `read_file`
+>
+> **技能位于：** {container_base_path}
+> {skill_evolution_section}
+> {skills_list}
+> </skill_system>
+> ```
+
 `{skills_list}` 渲染后的实际形态（以 22 个内置技能中的 deep-research 为例）：
 
 ```
@@ -47,6 +71,13 @@ You have access to skills that provide optimized workflows for specific tasks. E
     ... （22 个技能，每个约 4 行）
 </available_skills>
 ```
+
+> **中文附注**：
+>
+> 这是 `{skills_list}` 渲染后的 XML 结构示例。每个 `<skill>` 包含三个字段：
+> - `<name>`：技能名称，也是斜杠激活的标识符（如 `/deep-research`）
+> - `<description>`：技能适用场景描述，示例译文：「将此技能用于任何能从全面多源研究中获益的问题，以替代 WebSearch……[内置]」
+> - `<location>`：技能文件的完整虚拟路径，直接作为 `read_file` 工具的参数使用
 
 ---
 
@@ -62,6 +93,15 @@ You have access to skills that provide optimized workflows for specific tasks. E
 4. Load referenced resources only when needed during execution
 5. Follow the skill's instructions precisely
 ```
+
+> **中文附注**：
+>
+> **渐进式加载模式：**
+> 1. 当用户查询匹配技能的使用场景时，立即使用下方技能标签中提供的 path 属性对技能主文件调用 `read_file`
+> 2. 阅读并理解技能的工作流程和指令
+> 3. 技能文件包含对同一文件夹下外部资源的引用
+> 4. 仅在执行过程中需要时才加载引用的资源
+> 5. 精确遵循技能的指令
 
 这五步定义了一个**延迟加载工作流**：
 
@@ -91,6 +131,13 @@ You have access to skills that provide optimized workflows for specific tasks. E
 - Follow the activated skill before choosing a general workflow.
 - The runtime injects the activated skill content for explicit slash activations; do not call `read_file` for that SKILL.md again unless the injected skill references supporting resources you need.
 ```
+
+> **中文附注**：
+>
+> **显式斜杠技能激活：**
+> - 如果用户以 `/<skill-name>` 开始请求，表示明确请求当前轮次使用该技能
+> - 在选择通用工作流程之前，遵循激活的技能
+> - 运行时会为显式斜杠激活注入激活的技能内容；除非注入的技能引用了你需要的支持资源，否则不要再次对该 SKILL.md 调用 `read_file`
 
 这段文字处理了一个重要的边界情况：当用户显式使用 `/skill-name` 语法激活技能时，系统（`SkillActivationMiddleware`）会将 SKILL.md 的完整内容直接注入到当前对话的上下文中。
 
@@ -142,6 +189,19 @@ Prefer patch over edit. Before creating a new skill, confirm with the user first
 Skip simple one-off tasks.
 ```
 
+> **中文附注**：
+>
+> ## 技能自演化
+> 完成任务后，在以下情况下考虑创建或更新技能：
+> - 任务需要 5 次以上工具调用才能解决
+> - 你克服了不明显的错误或陷阱
+> - 用户纠正了你的方案，且纠正后的版本有效
+> - 你发现了一个非平凡的、可重复的工作流程
+>
+> 如果你使用了某个技能并遇到它未覆盖的问题，立即修补（patch）它。
+> 优先修补而非重写（edit）。创建新技能之前，先与用户确认。
+> 跳过简单的一次性任务。
+
 ### P-03 的设计哲学
 
 这是 DeerFlow 的一个高级特性：Agent 可以创建和更新自己的技能文件（对于 `[custom, editable]` 技能）。P-03 定义了这个能力的触发条件。
@@ -154,6 +214,13 @@ Skip simple one-off tasks.
 - The user corrected your approach and the corrected version worked
 - You discovered a non-trivial, recurring workflow
 ```
+
+> **中文附注**：
+>
+> - 任务需要 5 次以上工具调用才能解决
+> - 你克服了不明显的错误或陷阱
+> - 用户纠正了你的方案，且纠正后的版本有效
+> - 你发现了一个非平凡的、可重复的工作流程
 
 这四个条件形成了一个**价值过滤器**：只有当任务展现出复用价值时（5+工具调用意味着非平凡工作流；用户纠正意味着模型原始方案有缺陷值得记录；"recurring workflow"意味着会重复出现）才创建技能。
 
@@ -175,6 +242,10 @@ Skip simple one-off tasks.
 </available-deferred-tools>
 ```
 
+> **中文附注**：
+>
+> 延迟工具列表段落的模板形式。`{deferred_tool_names}` 在运行时替换为实际工具名称列表，每行一个工具名。标签名 `available-deferred-tools` 本身也是提示信号——告诉模型这些工具"可用但延迟加载"。
+
 渲染示例（假设有 3 个延迟工具）：
 
 ```
@@ -184,6 +255,10 @@ notion_create_page
 github_create_pr
 </available-deferred-tools>
 ```
+
+> **中文附注**：
+>
+> 渲染示例：列表中只有工具名称，没有描述、参数或使用指南。模型知道这三个工具存在，但在调用 `tool_search` 获取完整 schema 之前无法使用它们。
 
 注意：这里只有工具名称，没有描述、没有参数 schema、没有使用指南。这是极简信息设计：**让模型知道工具存在，但不暴露完整 schema**。
 
@@ -225,6 +300,17 @@ Query forms:
   - "+slack send" -- require "slack" in the name, rank by remaining terms
 ```
 
+> **中文附注**：
+>
+> 获取延迟工具的完整 schema 定义，以便可以调用它们。
+>
+> 延迟工具的名称出现在系统 prompt 的 `<available-deferred-tools>` 中。获取之前，只知道名称——无法调用。此工具将查询与延迟工具匹配，并返回匹配工具的完整 schema；一旦返回，工具即变为可调用状态。
+>
+> 查询形式：
+> - `"select:Read,Edit"` —— 按名称精确获取这些工具
+> - `"notebook jupyter"` —— 关键词搜索，最多返回 max_results 个最佳匹配
+> - `"+slack send"` —— 要求名称中包含 "slack"，按剩余词排名
+
 ### P-25 的结构分析
 
 **第一段**（解释工具的作用）：描述了"为什么需要这个工具"——因为延迟工具只有名字，需要通过这个工具获取完整 schema 才能调用。
@@ -240,6 +326,12 @@ Query forms:
 - "notebook jupyter" -- keyword search, up to max_results best matches
 - "+slack send" -- require "slack" in the name, rank by remaining terms
 ```
+
+> **中文附注**：
+>
+> - `"select:Read,Edit"` —— 按名称精确获取这些工具
+> - `"notebook jupyter"` —— 关键词搜索，最多返回 max_results 个最佳匹配
+> - `"+slack send"` —— 要求名称中包含 "slack"，按剩余词排名
 
 这三种格式覆盖了不同的使用场景：
 - `select:` 适合已知精确工具名的情况（最高效）

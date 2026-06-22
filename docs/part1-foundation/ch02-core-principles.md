@@ -145,6 +145,14 @@ P-01 的 `<clarification_system>` 段落没有写"当遇到不清楚的情况时
 5. Suggestions (suggestion)
 ```
 
+> **中文附注**：
+>
+> 1. 缺失信息（`missing_info`）
+> 2. 模糊需求（`ambiguous_requirement`）
+> 3. 方案选择（`approach_choice`）
+> 4. 风险操作（`risk_confirmation`）
+> 5. 建议（`suggestion`）
+
 每个场景都有：
 - 正式名称（英文标识符，出现在代码参数中）
 - 自然语言描述
@@ -193,6 +201,11 @@ P-01 的 `<clarification_system>` 段落没有写"当遇到不清楚的情况时
   silently discarded by the system — you will lose that work.
 ```
 
+> **中文附注**：
+>
+> ⛔ **硬性并发限制：每次回复最多 {n} 个 `task` 调用。这不是可选项。**
+> - 每次回复，你最多可以包含 {n} 个 task 工具调用。超出的调用会被系统**静默丢弃**——你会失去那些工作。
+
 不是说"最多调用 {n} 次"，而是加了"`silently discarded` — you will **lose that work**"。这个后果描述（工作会被悄悄丢弃）比单纯的数字限制有力得多。
 
 **P-01 `<clarification_system>` 中的执行中断说明**：
@@ -200,6 +213,10 @@ P-01 的 `<clarification_system>` 段落没有写"当遇到不清楚的情况时
 ```
 After calling ask_clarification, execution will be interrupted automatically
 ```
+
+> **中文附注**：
+>
+> 调用 ask_clarification 后，执行将被自动中断。
 
 不是"调用后等待用户回应"，而是"执行将自动中断"——这传递了一个关键信息：这不是礼貌性的暂停，而是系统级的强制中断。
 
@@ -210,6 +227,12 @@ When NOT to use this tool:
 - Simple, single-step operations (use tools directly)
 - Tasks requiring user interaction or clarification
 ```
+
+> **中文附注**：
+>
+> 不应使用此工具的情况：
+> - 简单的单步操作（直接使用工具）
+> - 需要用户交互或澄清的任务
 
 通过明确"不应用在哪里"（而非只说"应用在哪里"）来防止工具被滥用。工具的误用往往来自边界不清，而不是使用者不了解工具能做什么。
 
@@ -239,6 +262,17 @@ When NOT to use this tool:
 - Tasks requiring user interaction or clarification
 ```
 
+> **中文附注**：
+>
+> 何时使用此工具：
+> - 需要多个步骤或工具的复杂任务
+> - 会产生大量输出的任务
+> ……
+>
+> 何时不使用此工具：
+> - 简单的单步操作（直接使用工具）
+> - 需要用户交互或澄清的任务
+
 P-21（`ask_clarification` 工具描述）：
 ```
 Use this tool when you encounter situations where you cannot proceed
@@ -251,6 +285,17 @@ Best practices:
 - Do not make assumptions when clarification is needed
 ```
 
+> **中文附注**：
+>
+> 当遇到无法在没有用户输入的情况下继续的情形时，使用此工具：
+> - 信息缺失
+> - 需求模糊
+> ……
+>
+> 最佳实践：
+> - 一次只提出**一个**澄清问题，保持清晰
+> - 需要澄清时，不得擅自做假设
+
 P-18（通用子 Agent 描述）：
 ```
 Use this subagent when:
@@ -258,6 +303,14 @@ Use this subagent when:
 ...
 Do NOT use for simple, single-step operations.
 ```
+
+> **中文附注**：
+>
+> 在以下情况使用此子 agent：
+> - 任务同时需要探索和修改
+> ……
+>
+> 不要用于简单的单步操作。
 
 整个 P-02 的子 Agent 编排段落也是以"何时用/何时不用"作为骨架。
 
@@ -322,6 +375,15 @@ Token 成本在实际系统中有三个维度：
 </critical_reminders>
 ```
 
+> **中文附注**：
+>
+> `<critical_reminders>`（关键提醒）
+> - **澄清优先**：始终澄清……
+> - **技能优先**：始终加载相关技能……
+> - 渐进加载……
+> - 输出文件……
+> `</critical_reminders>`
+
 这些规则并不是全新的内容——它们在前面的段落中都有详细展开。`<critical_reminders>` 的作用是**重复强调**：通过在 Prompt 末尾再次列出最重要的规则，确保它们在模型生成响应前是"新鲜"的（距离生成点最近的内容通常有更高的注意力权重）。
 
 **❌/✅ 对比格式**：`<clarification_system>` 中的 STRICT ENFORCEMENT 段落：
@@ -331,6 +393,13 @@ Token 成本在实际系统中有三个维度：
 ...
 - ✅ Analyze the request in thinking → Identify unclear aspects → Ask BEFORE any action
 ```
+
+> **中文附注**：
+>
+> - ❌ 不得先开始工作再在执行中途要求澄清
+> - ❌ 不得以"效率"为由跳过澄清
+> ……
+> - ✅ 在思考中分析请求 → 识别不清晰之处 → 在任何行动前询问
 
 这种视觉对比格式降低了错误行为和正确行为之间的混淆概率。
 

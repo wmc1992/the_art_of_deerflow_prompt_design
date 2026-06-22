@@ -155,6 +155,39 @@ Important Rules:
 Return ONLY valid JSON, no explanation or markdown.
 ```
 
+> **中文附注**：
+>
+> 你是一个记忆管理系统。你的任务是分析对话并更新用户的记忆档案。
+>
+> **占位符**：`{current_memory}` 为当前记忆状态，`{conversation}` 为待处理的新对话，`{correction_hint}` 为可选的纠正提示。
+>
+> **指令**：（1）分析对话，提取关于用户的重要信息；（2）提取含具体细节（数字、名称、技术名称）的相关事实、偏好和背景；（3）按以下长度指导更新记忆区域。
+>
+> **在提取事实之前，先进行结构化反思**：
+> 1. **错误/重试检测**：agent 是否遇到错误、需要重试或产生不正确的结果？若是，将根本原因和正确方法记录为高置信度事实，类别为 `"correction"`。
+> 2. **用户纠正检测**：用户是否纠正了 agent 的方向、理解或输出？若是，将正确的解释或方法记录为高置信度事实，类别为 `"correction"`。只有当类别为 `"correction"` 且对话中明确提到错误时，才在 `"sourceError"` 中包含出错信息。
+> 3. **项目约束发现**：对话中是否发现了项目特定的约束？若是，用最合适的类别和置信度记录这些事实。
+>
+> **用户上下文**（当前状态——简洁摘要）：
+> - `workContext`：职业角色、公司、关键项目、主要技术（2-3 句）
+> - `personalContext`：语言、沟通偏好、主要兴趣（1-2 句）
+> - `topOfMind`：多个持续进行的关注领域和优先事项（3-5 句，详细段落）；注：捕捉**多个**并发关注领域，而非只记录单个任务
+>
+> **历史上下文**（时间轴视图——详细段落）：
+> - `recentMonths`：近 1-3 个月详细活动摘要（4-6 句或 1-2 段）
+> - `earlierContext`：3-12 个月前的重要历史模式（3-5 句或 1 段）
+> - `longTermBackground`：持久的基础背景（2-4 句）
+>
+> **事实提取**：提取具体可量化细节、专有名词（公司/项目/技术名）、版本号。
+> - 类别：`preference`（偏好）/ `knowledge`（知识）/ `context`（背景）/ `behavior`（行为）/ `goal`（目标）/ `correction`（纠正：明确的 agent 错误或用户纠正，含正确方法）
+> - 置信度：0.9-1.0 明确陈述 / 0.7-0.8 强烈暗示 / 0.5-0.6 推断模式（谨慎使用）
+>
+> **重要规则**：只有存在有意义的新信息时才设置 `shouldUpdate=true`；`correction` 类置信度 ≥ 0.95；只有纠正事实且先前错误在对话中明确陈述时才填写 `sourceError`；删除被新信息矛盾的旧事实；保留技术、公司、项目的确切名称；多语言专有名词保持原始形式。
+>
+> **重要**：**不得**在记忆中记录文件上传事件。上传的文件是会话特有且临时的——在未来的会话中将无法访问。记录上传事件会在后续对话中造成混乱。
+>
+> 只返回有效的 JSON，不加解释和 Markdown。
+
 ---
 
 ## 9.3 P-10 结构解析：六个记忆区域
@@ -169,6 +202,12 @@ P-10 定义了两层记忆结构，共六个区域：
 - topOfMind: Multiple ongoing focus areas and priorities (3-5 sentences, detailed paragraph)
 ```
 
+> **中文附注**：
+>
+> - `workContext`：职业角色、公司、关键项目、主要技术（2-3 句）
+> - `personalContext`：语言、沟通偏好、主要兴趣（1-2 句）
+> - `topOfMind`：多个持续进行的关注领域和优先事项（3-5 句，详细段落）
+
 这三个区域是**当前状态的快照**：用户现在是谁（`workContext`）、用户的个人特征（`personalContext`）、用户正在关注什么（`topOfMind`）。
 
 `topOfMind` 的设计特别值得注意：
@@ -176,6 +215,8 @@ P-10 定义了两层记忆结构，共六个区域：
 ```
 Note: This captures SEVERAL concurrent focus areas, not just one task
 ```
+
+> **中文附注**：注：此项捕捉**多个**并发关注领域，而非只记录单个任务。
 
 这个设计反映了真实用户行为的多线程性：用户同时在推进多个项目、追踪多个技术方向、学习多件事情。如果 `topOfMind` 只记录最近一次对话的话题，记忆会迅速退化为对最后一次交互的重复。通过强调"SEVERAL concurrent focus areas"，P-10 引导模型保持记忆的多维度性。
 
@@ -186,6 +227,12 @@ Note: This captures SEVERAL concurrent focus areas, not just one task
 - earlierContext: 3-12 months ago (3-5 sentences or 1 paragraph)
 - longTermBackground: Overall/foundational information (2-4 sentences)
 ```
+
+> **中文附注**：
+>
+> - `recentMonths`：近 1-3 个月（4-6 句或 1-2 段）
+> - `earlierContext`：3-12 个月前（3-5 句或 1 段）
+> - `longTermBackground`：总体/基础信息（2-4 句）
 
 三个时间段的划分创建了一个**记忆衰减模型**：
 - 最近 1-3 个月：详细，包含具体的技术探索和工作内容
@@ -207,6 +254,13 @@ Before extracting facts, perform a structured reflection on the conversation:
 3. Project Constraint Discovery: Were any project-specific constraints discovered?
 ```
 
+> **中文附注**：
+>
+> 在提取事实之前，先对对话进行结构化反思：
+> 1. 错误/重试检测：agent 是否遇到错误、需要重试或产生不正确的结果？
+> 2. 用户纠正检测：用户是否纠正了 agent 的方向、理解或输出？
+> 3. 项目约束发现：对话中是否发现了项目特定的约束？
+
 这个步骤强制模型**在提取事实之前先做一轮专项扫描**，而不是直接跳入"找出所有重要信息"。
 
 为什么需要先扫描错误和纠正？因为这类信息对未来交互最有价值，但也最容易被忽略：
@@ -227,10 +281,14 @@ P-10 中六个事实分类里，`correction` 是设计最特殊的一个：
 - correction: Explicit agent mistakes or user corrections, including the correct approach
 ```
 
+> **中文附注**：`correction`（纠正）：明确的 agent 错误或用户纠正，包括正确方法。
+
 **高置信度规则**：
 ```
 - Use category "correction" for explicit agent mistakes or user corrections; assign confidence >= 0.95 when the correction is explicit
 ```
+
+> **中文附注**：对明确的 agent 错误或用户纠正使用 `"correction"` 类别；纠正明确时，置信度 ≥ 0.95。
 
 普通事实的置信度可以低至 0.5（推断的模式），但 `correction` 类别的置信度被强制设为 ≥ 0.95。这反映了一个重要的认知：**明确的纠正比任何推断都更确定**，应该以最高置信度记录，以确保它在未来注入时不会被低置信度事实挤出。
 
@@ -238,6 +296,8 @@ P-10 中六个事实分类里，`correction` 是设计最特殊的一个：
 ```
 - Include "sourceError" only for explicit correction facts when the prior mistake or wrong approach is clearly stated; omit it otherwise
 ```
+
+> **中文附注**：只有当类别为纠正事实且先前的错误或错误方法在对话中明确陈述时，才包含 `"sourceError"`；否则省略。
 
 `sourceError` 记录的是"之前的错误是什么"，这样在未来类似场景发生时，模型可以知道不只是"要做 Y"，还是"因为 X 是错的，要做 Y"。
 
@@ -251,6 +311,13 @@ P-10 中六个事实分类里，`correction` 是设计最特殊的一个：
   * 0.7-0.8: Strongly implied from actions/discussions
   * 0.5-0.6: Inferred patterns (use sparingly, only for clear patterns)
 ```
+
+> **中文附注**：
+>
+> - 置信度：
+>   * 0.9-1.0：明确陈述的事实（"我在 X 工作"，"我的职位是 Y"）
+>   * 0.7-0.8：从行动/讨论中强烈暗示的
+>   * 0.5-0.6：推断的模式（谨慎使用，仅用于明显的模式）
 
 三个置信度区间对应三种信息来源：
 
@@ -282,6 +349,8 @@ P-10 要求输出纯 JSON，不带任何解释或 Markdown 标记：
 Return ONLY valid JSON, no explanation or markdown.
 ```
 
+> **中文附注**：只返回有效的 JSON，不加解释和 Markdown。
+
 JSON 格式的 `shouldUpdate` 字段设计很有意思：
 
 ```json
@@ -309,6 +378,8 @@ IMPORTANT: Do NOT record file upload events in memory. Uploaded files are
 session-specific and ephemeral — they will not be accessible in future sessions.
 Recording upload events causes confusion in subsequent conversations.
 ```
+
+> **中文附注**：**重要**：**不得**在记忆中记录文件上传事件。上传的文件是会话特有且临时的——在未来的会话中将无法访问。记录上传事件会在后续对话中造成混乱。
 
 这条规则解决了一个实际问题：如果记忆记录了"用户上传了 report.pdf"，下次会话时系统会以为这个文件仍然可访问，但实际上每次会话的上传文件是独立的临时文件。这种跨会话的路径引用会导致模型在未来尝试访问不存在的文件，造成混乱。
 
@@ -358,6 +429,26 @@ Rules:
 Return ONLY valid JSON.
 ```
 
+> **中文附注**：
+>
+> 从此消息中提取关于用户的事实性信息。
+>
+> 消息：`{message}`
+>
+> 以此 JSON 格式提取事实：`{ "facts": [{ "content": "...", "category": "...", "confidence": 0.0-1.0 }] }`
+>
+> 类别：
+> - `preference`：用户偏好（喜好/厌恶、风格、工具）
+> - `knowledge`：用户的专业知识或知识领域
+> - `context`：背景信息（地点、工作、项目）
+> - `behavior`：行为模式
+> - `goal`：用户的目标或目的
+> - `correction`：应避免重复的明确纠正或错误
+>
+> 规则：只提取清晰、具体的事实；置信度应反映确定性（明确陈述 = 0.9+，暗示 = 0.6-0.8）；跳过模糊或临时信息。
+>
+> 只返回有效的 JSON。
+
 ### P-11 与 P-10 的分工
 
 P-11 是 P-10 的轻量版本，两者处理不同的触发场景：
@@ -397,6 +488,20 @@ Facts:
 - [knowledge | 0.90] User has 5+ years experience with LangChain
 ...
 ```
+
+> **中文附注**（记忆注入示例格式）：
+>
+> 用户上下文：
+> - 工作：[workContext.summary]
+> - 个人：[personalContext.summary]
+> - 当前关注：[topOfMind.summary]
+>
+> 历史：
+> - 近期：[recentMonths.summary]
+> - 早期：[earlierContext.summary]
+> - 背景：[longTermBackground.summary]
+>
+> 事实（格式：`[类别 | 置信度] 内容`，按置信度降序排列，高置信度事实优先出现）
 
 这段文本被包裹在 `<memory>` 标签中，通过 `DynamicContextMiddleware` 注入到每次请求的 `<system-reminder>` 块中。
 

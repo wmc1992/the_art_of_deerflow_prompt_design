@@ -254,6 +254,18 @@ def _build_subagent_section(
 </subagent_system>
 ```
 
+> **中文附注**：
+>
+> `<subagent_system>`
+> **🚀 子 AGENT 模式已激活——分解、委派、综合**
+> ……
+> **⛔ 硬性并发限制：每次回复最多 3 个 `task` 调用。这不是可选项。**
+> ……
+> **可用子 Agent：**
+> - **general-purpose**：适用于需要复杂多步任务的能力 agent……
+> - **bash**：命令执行专家……
+> `</subagent_system>`
+
 这个段落在 Agent 的整个生命周期中内容固定。改变并发限制（`n`）或增减子 Agent 类型，需要重新构建 Agent。
 
 **为什么这样设计而不是运行时动态注入？**

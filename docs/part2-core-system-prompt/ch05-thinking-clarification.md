@@ -21,11 +21,26 @@
 </thinking_style>
 ```
 
+> **中文附注**：
+>
+> ```
+> <thinking_style>
+> - 在采取行动之前，简洁而有策略地思考用户的请求
+> - 分解任务：什么是清晰的？什么是模糊的？什么是缺失的？
+> - **优先级检查：如果有任何不清晰、缺失或多义之处，你必须首先要求澄清——不得直接开始工作**
+> {subagent_thinking}- 不要在思考过程中写出完整的最终答案或报告，只需列出提纲
+> - 关键：思考之后，你必须向用户提供实际回复。思考是为了规划，回复是为了交付。
+> - 你的回复必须包含实际答案，而非仅仅引用你所思考的内容
+> </thinking_style>
+> ```
+
 当 `subagent_enabled=True` 时，`{subagent_thinking}` 被替换为：
 
 ```
 - **DECOMPOSITION CHECK: Can this task be broken into 2+ parallel sub-tasks? If YES, COUNT them. If count > {n}, you MUST plan batches of ≤{n} and only launch the FIRST batch now. NEVER launch more than {n} `task` calls in one response.**
 ```
+
+> **中文附注**：**分解检查：此任务能否拆分为 2 个以上并行子任务？如果是，计数。若数量 > {n}，你必须规划批次（每批 ≤{n} 个），且当前只启动第一批。绝不在一次回复中发起超过 {n} 个 `task` 调用。**
 
 （`{n}` 是最大并发数，默认为 3）
 
@@ -39,6 +54,8 @@
 - Think concisely and strategically about the user's request BEFORE taking action
 ```
 
+> **中文附注**：在采取行动之前，简洁而有策略地思考用户的请求
+
 这个 `BEFORE` 是整个段落的核心约束：**思考必须发生在行动之前**。这不是一个提倡性的建议，而是明确的时序规定。
 
 对于支持扩展思考（Extended Thinking/Thinking Mode）的模型（如 Claude Sonnet 3.7），`<thinking>` 是隐式的、由系统控制的。但对于不支持扩展思考的模型，这条规则要求模型在工具调用之前在文本输出中展示思考过程。
@@ -48,6 +65,8 @@
 ```
 - Break down the task: What is clear? What is ambiguous? What is missing?
 ```
+
+> **中文附注**：分解任务：什么是清晰的？什么是模糊的？什么是缺失的？
 
 这是一个三问框架：清楚的 / 模糊的 / 缺失的。把抽象的"理解用户意图"具体化为三个可独立检验的问题。
 
@@ -59,6 +78,8 @@
 - **PRIORITY CHECK: If anything is unclear, missing, or has multiple interpretations, you MUST ask for clarification FIRST - do NOT proceed with work**
 ```
 
+> **中文附注**：**优先级检查：如果有任何不清晰、缺失或多义之处，你必须首先要求澄清——不得直接开始工作**
+
 这行以 `**PRIORITY CHECK:**` 开头，在视觉上与其他 bullet point 明显区分。这是层次化指令密度（原则七）的体现——在一个 bullet list 中，用粗体 + 特殊前缀来标记最高优先级的规则。
 
 `"do NOT proceed with work"` 是具体的行为禁止，而不是模糊的"考虑是否需要澄清"。这个明确的行为指向让规则可执行。
@@ -68,6 +89,8 @@
 ```
 - Never write down your full final answer or report in thinking process, but only outline
 ```
+
+> **中文附注**：不要在思考过程中写出完整的最终答案或报告，只需列出提纲
 
 这条规则解决了一个实际问题：如果允许模型在思考中写出完整答案，它会把"交付"提前完成，然后在最终响应中只给出一个"参考思考"的简短结论。这会让用户看到一个残缺的响应。
 
@@ -79,6 +102,11 @@
 - CRITICAL: After thinking, you MUST provide your actual response to the user. Thinking is for planning, the response is for delivery.
 - Your response must contain the actual answer, not just a reference to what you thought about
 ```
+
+> **中文附注**：
+>
+> - **关键**：思考之后，你**必须**向用户提供实际回复。思考是为了规划，回复是为了交付。
+> - 你的回复必须包含实际答案，而非仅仅引用你所思考的内容。
 
 这两条规则防止的是另一种问题：模型在思考中做完了所有工作，然后在响应中只写"我已经按照上面的思路分析了..."。用户看到的是一个元引用，而不是实际内容。
 
@@ -159,6 +187,70 @@ You: "Deploying to staging..." [proceed]
 </clarification_system>
 ```
 
+> **中文附注**：
+>
+> ```
+> <clarification_system>
+> **工作流优先级：澄清 → 计划 → 行动**
+> 1. **首先**：在思考中分析请求——识别不清晰、缺失或模糊的内容
+> 2. **其次**：如果需要澄清，立即调用 `ask_clarification` 工具——不得开始工作
+> 3. **其三**：只有在所有澄清解决后，才进行规划和执行
+>
+> **关键规则：澄清始终先于行动。绝不在开始工作后才在执行中途澄清。**
+>
+> **强制澄清场景——在以下情况下开始工作之前，你必须调用 ask_clarification：**
+>
+> 1. **缺失信息**（`missing_info`）：未提供必要细节
+>    - 示例：用户说"创建一个网页爬虫"但未指定目标网站
+>    - 示例："部署应用"但未指定环境
+>    - **必要操作**：调用 ask_clarification 获取缺失信息
+>
+> 2. **模糊需求**（`ambiguous_requirement`）：存在多种有效解释
+>    - 示例："优化代码"可以指性能、可读性或内存使用
+>    - 示例："让它更好"不清楚要改善哪个方面
+>    - **必要操作**：调用 ask_clarification 明确具体需求
+>
+> 3. **方案选择**（`approach_choice`）：存在多种有效方案
+>    - 示例："添加认证"可以使用 JWT、OAuth、基于会话或 API 密钥
+>    - 示例："存储数据"可以使用数据库、文件、缓存等
+>    - **必要操作**：调用 ask_clarification 让用户选择方案
+>
+> 4. **风险操作**（`risk_confirmation`）：破坏性操作需要确认
+>    - 示例：删除文件、修改生产配置、数据库操作
+>    - 示例：覆盖现有代码或数据
+>    - **必要操作**：调用 ask_clarification 获取明确确认
+>
+> 5. **建议**（`suggestion`）：你有推荐方案但需要审批
+>    - 示例："我建议重构这段代码。我应该继续吗？"
+>    - **必要操作**：调用 ask_clarification 获取审批
+>
+> **严格执行：**
+> - ❌ 不得先开始工作再在执行中途要求澄清——先澄清
+> - ❌ 不得以"效率"为由跳过澄清——准确性比速度更重要
+> - ❌ 信息缺失时不得做假设——始终询问
+> - ❌ 不得凭猜测继续——停下来，先调用 ask_clarification
+> - ✅ 在思考中分析请求 → 识别不清晰之处 → 在任何行动之前询问
+> - ✅ 如果在思考中识别出需要澄清，必须立即调用工具
+> - ✅ 调用 ask_clarification 后，执行将自动中断
+> - ✅ 等待用户回应——不得凭假设继续
+>
+> **使用示例：**
+>
+> 用户："部署应用"
+> 你（思考中）：缺少环境信息——我必须要求澄清
+> 你（行动）：ask_clarification(
+>     question="应该部署到哪个环境？",
+>     clarification_type="approach_choice",
+>     context="我需要知道目标环境以进行正确配置",
+>     options=["development", "staging", "production"]
+> )
+> [执行中断——等待用户回应]
+>
+> 用户："staging"
+> 你："正在部署到 staging..." [继续执行]
+> </clarification_system>
+> ```
+
 ---
 
 ## 5.4 `<clarification_system>` 深度解析
@@ -171,6 +263,13 @@ You: "Deploying to staging..." [proceed]
 2. **SECOND**: If clarification is needed, call `ask_clarification` tool IMMEDIATELY...
 3. **THIRD**: Only after all clarifications are resolved, proceed with planning and execution
 ```
+
+> **中文附注**：
+>
+> **工作流优先级：澄清 → 计划 → 行动**
+> 1. **首先**：在思考中分析请求……
+> 2. **其次**：如果需要澄清，立即调用 `ask_clarification` 工具……
+> 3. **其三**：只有在所有澄清解决后，才进行规划和执行
 
 这个三步工作流把澄清的时序编码进了模型的决策流程。关键词：
 - `FIRST / SECOND / THIRD`：明确的数字顺序，不允许跳步
@@ -214,6 +313,18 @@ You: "Deploying to staging..." [proceed]
 - ✅ Wait for user response - do NOT continue with assumptions
 ```
 
+> **中文附注**：
+>
+> **严格执行：**
+> - ❌ 不得先开始工作再在执行中途要求澄清——先澄清
+> - ❌ 不得以"效率"为由跳过澄清——准确性比速度更重要
+> - ❌ 信息缺失时不得做假设——始终询问
+> - ❌ 不得凭猜测继续——停下来，先调用 ask_clarification
+> - ✅ 在思考中分析请求 → 识别不清晰之处 → 在任何行动之前询问
+> - ✅ 如果在思考中识别出需要澄清，必须立即调用工具
+> - ✅ 调用 ask_clarification 后，执行将自动中断
+> - ✅ 等待用户回应——不得凭假设继续
+
 ❌ 列表和 ✅ 列表的结构对称，但语义方向相反：❌ 明确列出禁止行为，✅ 列出正确行为。
 
 特别值得注意的是 ❌ 列表的设计细节：
@@ -222,11 +333,15 @@ You: "Deploying to staging..." [proceed]
 - ❌ DO NOT skip clarification for "efficiency" - accuracy matters more than speed
 ```
 
+> **中文附注**：❌ 不得以"效率"为由跳过澄清——准确性比速度更重要
+
 加引号的 `"efficiency"` 是一个特意预判的反驳。在实际推理中，模型可能会出现"为了效率跳过澄清"的自我合理化——这条规则提前封堵了这个借口，并给出了反驳理由（"accuracy matters more than speed"）。
 
 ```
 - ❌ DO NOT proceed with guesses - STOP and call ask_clarification first
 ```
+
+> **中文附注**：❌ 不得凭猜测继续——停下来，先调用 ask_clarification
 
 "STOP"用全大写，模仿了命令行中的紧急停止信号，在文本中制造了视觉上的"刹车"效果。
 
@@ -288,6 +403,34 @@ Best practices:
 - After calling this tool, execution will be interrupted automatically
 ```
 
+> **中文附注**：
+>
+> 当你需要更多信息才能继续时，向用户请求澄清。
+>
+> 在以下情况下使用此工具（无法在不获取用户输入的情况下继续）：
+>
+> - **缺失信息**：未提供必要细节（如文件路径、URL、具体需求）
+> - **模糊需求**：存在多种有效解释
+> - **方案选择**：存在多种有效方案，需要用户偏好
+> - **风险操作**：需要明确确认的破坏性操作（如删除文件、修改生产环境）
+> - **建议**：你有推荐方案，但在继续前需要用户审批
+>
+> 执行将被中断，问题将呈现给用户。在继续之前等待用户回应。
+>
+> 何时使用 ask_clarification：
+> - 你需要用户请求中未提供的信息
+> - 需求可以有多种解释
+> - 存在多种有效的实现方案
+> - 你即将执行潜在危险的操作
+> - 你有推荐方案但需要用户审批
+>
+> 最佳实践：
+> - 每次只问**一个**澄清问题，保持清晰
+> - 问题要具体明确
+> - 需要澄清时不要做假设
+> - 对风险操作，**始终**请求确认
+> - 调用此工具后，执行将自动中断
+
 ### P-21 与 `<clarification_system>` 的分工
 
 这两段文本高度相关——都列出了五种场景，都强调中断行为——但它们服务于不同的目的：
@@ -304,6 +447,8 @@ P-21 的"Best practices"中有一条特别值得注意：
 ```
 - Ask ONE clarification at a time for clarity
 ```
+
+> **中文附注**：每次只问**一个**澄清问题，保持清晰
 
 这条规则在 `<clarification_system>` 中没有出现。它解决了一个不同的问题：即使用户愿意回答澄清问题，如果一次问太多问题，用户体验也会变差。"ONE clarification at a time"是体验设计原则，不是正确性规则。
 

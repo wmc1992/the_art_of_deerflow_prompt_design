@@ -172,6 +172,20 @@ Do NOT ask when:
 - A reasonable default exists and the user hasn't indicated preference
 ```
 
+> **中文附注**：
+>
+> 何时要求澄清：
+> 1. `missing_required_param`（缺少必要参数）：任务无法在没有特定值的情况下继续
+>    （示例："创建报告"——覆盖哪个时间段？）
+> 2. `ambiguous_target`（目标模糊）：指令可能适用于多个对象
+>    （示例："删除文件"——哪个文件？）
+> 3. `irreversible_action`（不可逆操作）：操作无法撤销且未得到明确确认
+>    （示例："清理数据库"涉及删除记录）
+>
+> 以下情况**不要**询问：
+> - 信息可以从上下文中推断
+> - 存在合理的默认值且用户未表明偏好
+
 **预期效果**：模型的澄清行为从"随机"变为"可预测"。测试可以针对每个场景类型验证正确行为。
 
 ### 阶段 5：内容按需加载（成本高，解决规模问题）
@@ -192,6 +206,14 @@ Do NOT ask when:
    - **report**: Generate formatted reports. (Use: /report)
    (Use /skill-name to activate a skill and load its full guide)
    ```
+
+   > **中文附注**：
+   >
+   > 可用技能：
+   > - **sql**：执行 SQL 查询并分析数据。（使用：/sql）
+   > - **viz**：创建数据可视化图表。（使用：/viz）
+   > - **report**：生成格式化报告。（使用：/report）
+   > （输入 /技能名称 以激活技能并加载完整指南）
 
 3. 实现 `load_skill(name)` 工具，供模型在被激活时调用：
    ```python
