@@ -1574,18 +1574,46 @@
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>{acp_section}
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>&lt;/working_directory&gt;
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&lt;working_directory existed=&quot;true&quot;&gt;
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>- 用户上传：`/mnt/user-data/uploads`——用户上传的文件（在上下文中自动列出）
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>- 用户工作区：`/mnt/user-data/workspace`——临时文件的工作目录
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>- 输出文件：`/mnt/user-data/outputs`——最终交付物必须保存在此处
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>**文件管理：**
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>- 上传的文件在每次请求前自动列在 `&lt;uploaded_files&gt;` 区块中
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>- 使用 `read_file` 工具通过列表中的路径读取上传的文件
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>- 对于 PDF、PPT、Excel 和 Word 文件，可在原文件旁获取转换后的 Markdown 版本（*.md）
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>- 所有临时工作在 `/mnt/user-data/workspace` 中进行
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>- 将 `/mnt/user-data/workspace` 视为编码和文件编辑任务的默认当前工作目录
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>- 编写创建/读取工作区文件的脚本或命令时，优先使用相对路径，如 `hello.txt`、`../uploads/data.csv` 和 `../outputs/report.md`
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>- 当工作区的相对路径已足够时，避免在生成的脚本中硬编码 `/mnt/user-data/...`
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>- 最终交付物必须复制到 `/mnt/user-data/outputs` 并使用 `present_files` 工具展示
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>{acp_section}
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>&lt;/working_directory&gt;
+</span></code></pre></div>
+</blockquote>
 <hr />
 <h2 id="72-working_directory">7.2 <code>&lt;working_directory&gt;</code> 解析<a class="headerlink" href="#72-working_directory" title="Permanent link">&para;</a></h2>
 <h3 id="xml-existedtrue">XML 属性设计：<code>existed="true"</code><a class="headerlink" href="#xml-existedtrue" title="Permanent link">&para;</a></h3>
-<div class="language-html highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">&lt;</span><span class="nt">working_directory</span> <span class="na">existed</span><span class="o">=</span><span class="s">&quot;true&quot;</span><span class="p">&gt;</span>
+<div class="language-html highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">&lt;</span><span class="nt">working_directory</span> <span class="na">existed</span><span class="o">=</span><span class="s">&quot;true&quot;</span><span class="p">&gt;</span>
 </span></code></pre></div>
 <p>这个标签有一个 XML 属性 <code>existed="true"</code>。这个属性不是给人类读者看的——它是给模型的语义暗示：<strong>这些目录在运行时是真实存在的</strong>，不是假设性的路径。</p>
 <p>在没有这个属性的情况下，模型可能对路径的存在性产生疑虑：这些路径是约定（convention）还是实际存在的目录？<code>existed="true"</code> 消除了这种歧义，让模型以确定的态度对待这些路径。</p>
 <h3 id="_2">三分目录结构<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>- User uploads: `/mnt/user-data/uploads` - ...
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>- User workspace: `/mnt/user-data/workspace` - ...
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>- Output files: `/mnt/user-data/outputs` - ...
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>- User uploads: `/mnt/user-data/uploads` - ...
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>- User workspace: `/mnt/user-data/workspace` - ...
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>- Output files: `/mnt/user-data/outputs` - ...
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li>用户上传：<code>/mnt/user-data/uploads</code>——……</li>
+<li>用户工作区：<code>/mnt/user-data/workspace</code>——……</li>
+<li>输出文件：<code>/mnt/user-data/outputs</code>——……</li>
+</ul>
+</blockquote>
 <p>这个三分结构编码了一个重要的语义区分：</p>
 <table>
 <thead>
@@ -1620,75 +1648,140 @@
 <p>这个分离防止了常见的文件管理混乱：不应该把临时文件存到 <code>/outputs</code>（降低交付物的信噪比），也不应该把用户上传文件和生成文件混在一起（破坏溯源能力）。</p>
 <p><strong>语义边界也是安全边界</strong>：<code>present_files</code> 工具（P-23）只接受 <code>/mnt/user-data/outputs</code> 下的文件，这个约束在代码层面强制执行。如果没有 <code>&lt;working_directory&gt;</code> 段落预先建立这种认知，模型可能无法理解为什么 <code>present_files</code> 对 <code>/workspace</code> 下的文件报错。</p>
 <h3 id="_3">相对路径偏好<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>- Avoid hardcoding `/mnt/user-data/...` inside generated scripts when a relative path from the workspace is enough
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>- Avoid hardcoding `/mnt/user-data/...` inside generated scripts when a relative path from the workspace is enough
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li>当工作区的相对路径已足够时，避免在生成的脚本中硬编码 <code>/mnt/user-data/...</code></li>
+</ul>
+</blockquote>
 <p>这条规则解决了一个实际问题：如果 Agent 生成的代码（Python 脚本、shell 命令）中硬编码了 <code>/mnt/user-data/workspace/</code> 这样的绝对路径，这些脚本在移出沙箱后会立即失效。</p>
 <p>强制使用相对路径（如 <code>../uploads/data.csv</code> 而不是 <code>/mnt/user-data/uploads/data.csv</code>）让生成的代码具有更好的可移植性。这是一个"生成代码质量"的规范，不只是"操作正确性"的规范。</p>
 <h3 id="present_files"><code>present_files</code> 强制要求<a class="headerlink" href="#present_files" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>- Final deliverables must be copied to `/mnt/user-data/outputs` and presented using `present_files` tool
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>- Final deliverables must be copied to `/mnt/user-data/outputs` and presented using `present_files` tool
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li>最终交付物必须复制到 <code>/mnt/user-data/outputs</code> 并使用 <code>present_files</code> 工具展示</li>
+</ul>
+</blockquote>
 <p>这条规则建立了一个强制的工作流收尾步骤。仅仅把文件写入 <code>/outputs</code> 还不够，还必须调用 <code>present_files</code> 工具——这个调用会触发前端界面展示文件预览。</p>
 <p>如果没有这条规则，模型可能会在回复中说"我已经把报告保存到 /mnt/user-data/outputs/report.md"，但用户看到的是文字描述而不是可下载的文件链接。<code>present_files</code> 是连接文件系统状态与前端 UI 的桥梁。</p>
 <hr />
 <h2 id="73-p-23present_files">7.3 P-23：<code>present_files</code> 工具描述（完整原文）<a class="headerlink" href="#73-p-23present_files" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Make files visible to the user for viewing and rendering in the client interface.
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>When to use the present_files tool:
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>- Making any file available for the user to view, download, or interact with
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>- Presenting multiple related files at once
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>- After creating files that should be presented to the user
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>When NOT to use the present_files tool:
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>- When you only need to read file contents for your own processing
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>- For temporary or intermediate files not meant for user viewing
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>Notes:
-</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>- You should call this tool after creating files and moving them to the `/mnt/user-data/outputs` directory.
-</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>- This tool can be safely called in parallel with other tools. State updates are handled by a reducer to prevent conflicts.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Make files visible to the user for viewing and rendering in the client interface.
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>When to use the present_files tool:
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>- Making any file available for the user to view, download, or interact with
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>- Presenting multiple related files at once
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>- After creating files that should be presented to the user
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>When NOT to use the present_files tool:
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>- When you only need to read file contents for your own processing
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>- For temporary or intermediate files not meant for user viewing
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>Notes:
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>- You should call this tool after creating files and moving them to the `/mnt/user-data/outputs` directory.
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>- This tool can be safely called in parallel with other tools. State updates are handled by a reducer to prevent conflicts.
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>使文件对用户可见，以便在客户端界面中查看和渲染。</p>
+<p><strong>何时使用 present_files 工具：</strong>
+- 使任何文件可供用户查看、下载或交互
+- 一次呈现多个相关文件
+- 创建应展示给用户的文件之后</p>
+<p><strong>何时不使用 present_files 工具：</strong>
+- 仅需读取文件内容供自己处理时
+- 不打算供用户查看的临时或中间文件</p>
+<p><strong>注意：</strong>
+- 应在将文件创建并移动到 <code>/mnt/user-data/outputs</code> 目录后调用此工具
+- 此工具可安全地与其他工具并行调用。状态更新由 reducer 处理以防止冲突</p>
+</blockquote>
 <h3 id="p-23">P-23 的设计分析<a class="headerlink" href="#p-23" title="Permanent link">&para;</a></h3>
 <p><strong>"When NOT to use"的精准区分</strong>：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>- When you only need to read file contents for your own processing
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>- For temporary or intermediate files not meant for user viewing
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>- When you only need to read file contents for your own processing
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>- For temporary or intermediate files not meant for user viewing
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li>仅需读取文件内容供自己处理时</li>
+<li>不打算供用户查看的临时或中间文件</li>
+</ul>
+</blockquote>
 <p>这两个"不应用"场景解决了不同层次的误用：
 - 第一条防止把"内部处理"（<code>read_file</code>）和"对外展示"（<code>present_files</code>）混淆
 - 第二条防止把工作区的中间产物也展示给用户（让用户看到一堆调试文件不是好的用户体验）</p>
 <p><strong>并行安全说明</strong>：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>- This tool can be safely called in parallel with other tools. State updates are handled by a reducer to prevent conflicts.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>- This tool can be safely called in parallel with other tools. State updates are handled by a reducer to prevent conflicts.
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li>此工具可安全地与其他工具并行调用。状态更新由 reducer 处理以防止冲突</li>
+</ul>
+</blockquote>
 <p>这条注释揭示了系统设计的一个细节：<code>present_files</code> 内部使用了一个 reducer 来处理并发写入，所以模型可以安全地并行调用多个 <code>present_files</code>（或者与其他工具并行调用），不会产生竞态条件。</p>
 <p>这条信息让模型可以放心地在同一个响应中同时调用多个工具，而不需要序列化这些调用——这对性能有直接影响。</p>
 <hr />
 <h2 id="74-p-24view_image">7.4 P-24：<code>view_image</code> 工具描述（完整原文）<a class="headerlink" href="#74-p-24view_image" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Read an image file.
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>Use this tool to read an image file and make it available for display.
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>When to use the view_image tool:
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>- When you need to view an image file.
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>When NOT to use the view_image tool:
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>- For non-image files (use present_files instead)
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>- For multiple files at once (use present_files instead)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Read an image file.
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>Use this tool to read an image file and make it available for display.
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>When to use the view_image tool:
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>- When you need to view an image file.
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>When NOT to use the view_image tool:
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>- For non-image files (use present_files instead)
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>- For multiple files at once (use present_files instead)
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>读取图像文件。</p>
+<p>使用此工具读取图像文件并使其可供显示。</p>
+<p><strong>何时使用 view_image 工具：</strong>
+- 需要查看图像文件时</p>
+<p><strong>何时不使用 view_image 工具：</strong>
+- 非图像文件（改用 present_files）
+- 一次处理多个文件（改用 present_files）</p>
+</blockquote>
 <h3 id="p-24">P-24 的极简原则<a class="headerlink" href="#p-24" title="Permanent link">&para;</a></h3>
 <p>P-24 是所有工具描述中最短的——完整描述只有 6 行。相比之下，P-22（<code>task</code>）有 30+ 行，P-21（<code>ask_clarification</code>）有 20+ 行。</p>
 <p>这个极简不是疏忽，而是工具复杂度的真实反映：<code>view_image</code> 是一个功能单一的工具（读取图像文件），使用场景非常明确。过度描述只会增加不必要的 token 开销。</p>
 <p><strong>两个"When NOT to use"条件的设计</strong>：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>- For non-image files (use present_files instead)
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>- For multiple files at once (use present_files instead)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>- For non-image files (use present_files instead)
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>- For multiple files at once (use present_files instead)
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li>非图像文件（改用 present_files）</li>
+<li>一次处理多个文件（改用 present_files）</li>
+</ul>
+</blockquote>
 <p>两个条件都指向 <code>present_files</code>，并明确了"替代方案"。这不只是说"不要这样用"，而是说"如果是这种情况，应该用另一个工具"。这种"禁止 + 替代方案"的结构降低了模型的决策成本——它不需要重新判断如何处理非图像文件，直接切换工具。</p>
 <hr />
 <h2 id="75-response_style">7.5 <code>&lt;response_style&gt;</code> 段落原文<a class="headerlink" href="#75-response_style" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>&lt;response_style&gt;
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>- Clear and Concise: Avoid over-formatting unless requested
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>- Natural Tone: Use paragraphs and prose, not bullet points by default
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>- Action-Oriented: Focus on delivering results, not explaining processes
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>&lt;/response_style&gt;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&lt;response_style&gt;
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>- Clear and Concise: Avoid over-formatting unless requested
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>- Natural Tone: Use paragraphs and prose, not bullet points by default
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>- Action-Oriented: Focus on delivering results, not explaining processes
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>&lt;/response_style&gt;
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>&lt;response_style&gt;
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>- 清晰简洁：除非被要求，避免过度格式化
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>- 自然语气：默认使用段落和散文，而非要点列表
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>- 行动导向：专注于交付结果，而非解释过程
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>&lt;/response_style&gt;
+</span></code></pre></div>
+</blockquote>
 <p>这是 P-01 中最短的功能性段落：三条规则，每条约 10 个 token。</p>
 <h3 id="_4">为什么这么简短？<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <p><code>&lt;response_style&gt;</code> 只涉及输出风格，是相对容易控制的行为维度。相比澄清系统（需要 5 个场景 + 示例 + 工作流）或引用系统（需要格式规范 + 示例 + 禁止事项），输出风格可以用少量规则精确描述。</p>
@@ -1723,44 +1816,44 @@
 <p><strong>"unless requested"</strong>：<code>"Avoid over-formatting unless requested"</code> 保留了用户显式要求格式化的权利。这是规则的边界条件——不是绝对禁止，而是"默认不要"。</p>
 <hr />
 <h2 id="76-citations">7.6 <code>&lt;citations&gt;</code> 段落原文<a class="headerlink" href="#76-citations" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&lt;citations&gt;
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>**CRITICAL: Always include citations when using web search results**
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>- **When to Use**: MANDATORY after web_search, web_fetch, or any external information source
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>- **Format**: Use Markdown link format `[citation:TITLE](URL)` immediately after the claim
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>- **Placement**: Inline citations should appear right after the sentence or claim they support
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>- **Sources Section**: Also collect all citations in a &quot;Sources&quot; section at the end of reports
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>**Example - Inline Citations:**
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>```markdown
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>The key AI trends for 2026 include enhanced reasoning capabilities and multimodal integration
-</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>[citation:AI Trends 2026](https://techcrunch.com/ai-trends).
-</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>Recent breakthroughs in language models have also accelerated progress
-</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>[citation:OpenAI Research](https://openai.com/research).
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>&lt;citations&gt;
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>**CRITICAL: Always include citations when using web search results**
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>- **When to Use**: MANDATORY after web_search, web_fetch, or any external information source
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>- **Format**: Use Markdown link format `[citation:TITLE](URL)` immediately after the claim
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>- **Placement**: Inline citations should appear right after the sentence or claim they support
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>- **Sources Section**: Also collect all citations in a &quot;Sources&quot; section at the end of reports
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>**Example - Inline Citations:**
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>```markdown
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>The key AI trends for 2026 include enhanced reasoning capabilities and multimodal integration
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>[citation:AI Trends 2026](https://techcrunch.com/ai-trends).
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>Recent breakthroughs in language models have also accelerated progress
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>[citation:OpenAI Research](https://openai.com/research).
 </span></code></pre></div>
 <p><strong>Example - Deep Research Report with Citations:</strong>
-<div class="language-markdown highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="gu">## Executive Summary</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>DeerFlow is an open-source AI agent framework that gained significant traction in early 2026
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>[<span class="nt">citation:GitHub Repository</span>](<span class="na">https://github.com/bytedance/deer-flow</span>). The project focuses on
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>providing a production-ready agent system with sandbox execution and memory management
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>[<span class="nt">citation:DeerFlow Documentation</span>](<span class="na">https://deer-flow.dev/docs</span>).
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
-</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="gu">## Key Analysis</span>
-</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>
-</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="gu">### Architecture Design</span>
-</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>
-</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>The system uses LangGraph for workflow orchestration [<span class="nt">citation:LangGraph Docs</span>](<span class="na">https://langchain.com/langgraph</span>),
-</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>combined with a FastAPI gateway for REST API access [<span class="nt">citation:FastAPI</span>](<span class="na">https://fastapi.tiangolo.com</span>).
-</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>
-</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="gu">## Sources</span>
-</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>
-</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="gu">### Primary Sources</span>
-</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="k">-</span><span class="w"> </span>[<span class="nt">GitHub Repository</span>](<span class="na">https://github.com/bytedance/deer-flow</span>) - Official source code and documentation
-</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="k">-</span><span class="w"> </span>[<span class="nt">DeerFlow Documentation</span>](<span class="na">https://deer-flow.dev/docs</span>) - Technical specifications
-</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>
-</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="gu">### Media Coverage</span>
-</span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a><span class="k">-</span><span class="w"> </span>[<span class="nt">AI Trends 2026</span>](<span class="na">https://techcrunch.com/ai-trends</span>) - Industry analysis
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="gu">## Executive Summary</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>DeerFlow is an open-source AI agent framework that gained significant traction in early 2026
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>[<span class="nt">citation:GitHub Repository</span>](<span class="na">https://github.com/bytedance/deer-flow</span>). The project focuses on
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>providing a production-ready agent system with sandbox execution and memory management
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>[<span class="nt">citation:DeerFlow Documentation</span>](<span class="na">https://deer-flow.dev/docs</span>).
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="gu">## Key Analysis</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="gu">### Architecture Design</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>The system uses LangGraph for workflow orchestration [<span class="nt">citation:LangGraph Docs</span>](<span class="na">https://langchain.com/langgraph</span>),
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>combined with a FastAPI gateway for REST API access [<span class="nt">citation:FastAPI</span>](<span class="na">https://fastapi.tiangolo.com</span>).
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="gu">## Sources</span>
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="gu">### Primary Sources</span>
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="k">-</span><span class="w"> </span>[<span class="nt">GitHub Repository</span>](<span class="na">https://github.com/bytedance/deer-flow</span>) - Official source code and documentation
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="k">-</span><span class="w"> </span>[<span class="nt">DeerFlow Documentation</span>](<span class="na">https://deer-flow.dev/docs</span>) - Technical specifications
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a>
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="gu">### Media Coverage</span>
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="k">-</span><span class="w"> </span>[<span class="nt">AI Trends 2026</span>](<span class="na">https://techcrunch.com/ai-trends</span>) - Industry analysis
 </span></code></pre></div></p>
 <p><strong>CRITICAL: Sources section format:</strong>
 - Every item in the Sources section MUST be a clickable markdown link with URL
@@ -1780,54 +1873,110 @@
 - ✅ ALWAYS add <code>[citation:Title](URL)</code> after claims from external sources
 - ✅ ALWAYS include a "Sources" section listing all references
 </citations>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>---
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>## 7.7 `&lt;citations&gt;` 深度解析
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>### 两种格式的区分：行内引用 vs Sources 区块
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>`&lt;citations&gt;` 定义了两种不同的引用格式，并明确区分了它们的使用场景：
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>| 格式 | 用途 | 语法 |
-</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>|------|------|------|
-</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>| 行内引用 | 在文本中标记具体声明的来源 | `[citation:TITLE](URL)` |
-</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>| Sources 区块 | 在报告末尾汇总所有引用来源 | `[Title](URL) - Description` |
-</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>
-</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>**为什么行内引用格式要有 `citation:` 前缀？**
-</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>
-</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>`[citation:Title](URL)` 是一个**自定义 Markdown 格式**，并非标准 Markdown 链接。这个 `citation:` 前缀的作用是让前端代码能够区分&quot;普通链接&quot;（如 `[点击这里](url)`）和&quot;来源引用&quot;（如 `[citation:DeerFlow](url)`），从而在 UI 中给引用链接添加特殊样式（例如上标编号或来源图标）。
-</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>
-</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>这是 Prompt 层面的 UI 协议定义：通过在 Prompt 中约定特定格式，实现了 LLM 输出与前端渲染之间的无形约定。
-</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>
-</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>**Sources 区块为什么不用 `citation:` 格式？**
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>&gt; **中文附注**：
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>&gt;
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>&gt; ```
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>&gt; &lt;citations&gt;
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>&gt; **关键：使用网络搜索结果时始终包含引用**
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>&gt;
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>&gt; - **何时使用**：在 web_search、web_fetch 或任何外部信息来源后为**强制要求**
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>&gt; - **格式**：在相关声明后立即使用 Markdown 链接格式 `[citation:标题](URL)`
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>&gt; - **位置**：行内引用应紧跟在其支持的句子或声明之后
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>&gt; - **来源区块**：还要在报告末尾的&quot;来源&quot;区块中汇总所有引用
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>&gt;
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>&gt; **示例——行内引用：**（示例内容为英文，保持原样以展示格式）
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>&gt;
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>&gt; **示例——深度研究报告引用格式：**（示例内容为英文，保持原样以展示格式）
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>&gt;
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>&gt; **关键：来源区块格式：**
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>&gt; - 来源区块中的每个条目**必须**是带 URL 的可点击 Markdown 链接
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>&gt; - 使用标准 Markdown 链接格式 `[标题](URL) - 描述`（**不是** `[citation:...]` 格式）
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>&gt; - `[citation:标题](URL)` 格式**仅用于**报告正文的行内引用
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>&gt; - ❌ 错误：`GitHub 仓库 - 官方源代码和文档`（没有 URL！）
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>&gt; - ❌ 错误（来源区块中）：`[citation:GitHub Repository](url)`（citation 前缀仅用于行内！）
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a>&gt; - ✅ 正确（来源区块中）：`[GitHub Repository](https://github.com/bytedance/deer-flow) - 官方源代码和文档`
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>&gt;
+</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>&gt; **研究任务工作流：**
+</span><span id="__span-15-25"><a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a>&gt; 1. 使用 web_search 查找来源 → 从结果中提取 {标题, URL, 摘要}
+</span><span id="__span-15-26"><a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a>&gt; 2. 撰写内容并附行内引用：`声明 [citation:标题](url)`
+</span><span id="__span-15-27"><a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a>&gt; 3. 在末尾的&quot;来源&quot;区块中收集所有引用
+</span><span id="__span-15-28"><a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a>&gt; 4. 当有来源可用时，**绝不**写无引用的声明
+</span><span id="__span-15-29"><a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a>&gt;
+</span><span id="__span-15-30"><a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a>&gt; **关键规则：**
+</span><span id="__span-15-31"><a id="__codelineno-15-31" name="__codelineno-15-31" href="#__codelineno-15-31"></a>&gt; - ❌ 不得撰写无引用的研究内容
+</span><span id="__span-15-32"><a id="__codelineno-15-32" name="__codelineno-15-32" href="#__codelineno-15-32"></a>&gt; - ❌ 不得忘记从搜索结果中提取 URL
+</span><span id="__span-15-33"><a id="__codelineno-15-33" name="__codelineno-15-33" href="#__codelineno-15-33"></a>&gt; - ✅ 对来自外部来源的声明**始终**添加 `[citation:标题](URL)`
+</span><span id="__span-15-34"><a id="__codelineno-15-34" name="__codelineno-15-34" href="#__codelineno-15-34"></a>&gt; - ✅ **始终**包含列出所有参考来源的&quot;来源&quot;区块
+</span><span id="__span-15-35"><a id="__codelineno-15-35" name="__codelineno-15-35" href="#__codelineno-15-35"></a>&gt; &lt;/citations&gt;
+</span><span id="__span-15-36"><a id="__codelineno-15-36" name="__codelineno-15-36" href="#__codelineno-15-36"></a>&gt; ```
+</span><span id="__span-15-37"><a id="__codelineno-15-37" name="__codelineno-15-37" href="#__codelineno-15-37"></a>
+</span><span id="__span-15-38"><a id="__codelineno-15-38" name="__codelineno-15-38" href="#__codelineno-15-38"></a>---
+</span><span id="__span-15-39"><a id="__codelineno-15-39" name="__codelineno-15-39" href="#__codelineno-15-39"></a>
+</span><span id="__span-15-40"><a id="__codelineno-15-40" name="__codelineno-15-40" href="#__codelineno-15-40"></a>## 7.7 `&lt;citations&gt;` 深度解析
+</span><span id="__span-15-41"><a id="__codelineno-15-41" name="__codelineno-15-41" href="#__codelineno-15-41"></a>
+</span><span id="__span-15-42"><a id="__codelineno-15-42" name="__codelineno-15-42" href="#__codelineno-15-42"></a>### 两种格式的区分：行内引用 vs Sources 区块
+</span><span id="__span-15-43"><a id="__codelineno-15-43" name="__codelineno-15-43" href="#__codelineno-15-43"></a>
+</span><span id="__span-15-44"><a id="__codelineno-15-44" name="__codelineno-15-44" href="#__codelineno-15-44"></a>`&lt;citations&gt;` 定义了两种不同的引用格式，并明确区分了它们的使用场景：
+</span><span id="__span-15-45"><a id="__codelineno-15-45" name="__codelineno-15-45" href="#__codelineno-15-45"></a>
+</span><span id="__span-15-46"><a id="__codelineno-15-46" name="__codelineno-15-46" href="#__codelineno-15-46"></a>| 格式 | 用途 | 语法 |
+</span><span id="__span-15-47"><a id="__codelineno-15-47" name="__codelineno-15-47" href="#__codelineno-15-47"></a>|------|------|------|
+</span><span id="__span-15-48"><a id="__codelineno-15-48" name="__codelineno-15-48" href="#__codelineno-15-48"></a>| 行内引用 | 在文本中标记具体声明的来源 | `[citation:TITLE](URL)` |
+</span><span id="__span-15-49"><a id="__codelineno-15-49" name="__codelineno-15-49" href="#__codelineno-15-49"></a>| Sources 区块 | 在报告末尾汇总所有引用来源 | `[Title](URL) - Description` |
+</span><span id="__span-15-50"><a id="__codelineno-15-50" name="__codelineno-15-50" href="#__codelineno-15-50"></a>
+</span><span id="__span-15-51"><a id="__codelineno-15-51" name="__codelineno-15-51" href="#__codelineno-15-51"></a>**为什么行内引用格式要有 `citation:` 前缀？**
+</span><span id="__span-15-52"><a id="__codelineno-15-52" name="__codelineno-15-52" href="#__codelineno-15-52"></a>
+</span><span id="__span-15-53"><a id="__codelineno-15-53" name="__codelineno-15-53" href="#__codelineno-15-53"></a>`[citation:Title](URL)` 是一个**自定义 Markdown 格式**，并非标准 Markdown 链接。这个 `citation:` 前缀的作用是让前端代码能够区分&quot;普通链接&quot;（如 `[点击这里](url)`）和&quot;来源引用&quot;（如 `[citation:DeerFlow](url)`），从而在 UI 中给引用链接添加特殊样式（例如上标编号或来源图标）。
+</span><span id="__span-15-54"><a id="__codelineno-15-54" name="__codelineno-15-54" href="#__codelineno-15-54"></a>
+</span><span id="__span-15-55"><a id="__codelineno-15-55" name="__codelineno-15-55" href="#__codelineno-15-55"></a>这是 Prompt 层面的 UI 协议定义：通过在 Prompt 中约定特定格式，实现了 LLM 输出与前端渲染之间的无形约定。
+</span><span id="__span-15-56"><a id="__codelineno-15-56" name="__codelineno-15-56" href="#__codelineno-15-56"></a>
+</span><span id="__span-15-57"><a id="__codelineno-15-57" name="__codelineno-15-57" href="#__codelineno-15-57"></a>**Sources 区块为什么不用 `citation:` 格式？**
 </span></code></pre></div>
 - ❌ WRONG in Sources: <code>[citation:GitHub Repository](url)</code> (citation prefix is for inline only!)
 - ✅ RIGHT in Sources: <code>[GitHub Repository](https://github.com/bytedance/deer-flow) - ...</code>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Sources 区块是给人类读者看的可视化列表，需要标准 Markdown 链接格式（可点击）。如果 Sources 区块也使用 `citation:` 前缀，前端可能会把它再次渲染为特殊格式（双重渲染），导致显示异常。
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>这个区分展示了 Prompt 设计中的**格式协议层**：Prompt 不只是描述行为规范，还在定义输出的格式协议，这个协议被前端代码解析和消费。
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
-</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>### 反例驱动的规范
-</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
-</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>`&lt;citations&gt;` 中包含了大量 ❌/✅ 的反例对比：
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>&gt; **中文附注**：
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>&gt;
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>&gt; - ❌ 错误（来源区块中）：`[citation:GitHub Repository](url)`（citation 前缀仅用于行内！）
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>&gt; - ✅ 正确（来源区块中）：`[GitHub Repository](https://github.com/bytedance/deer-flow) - ...`
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>Sources 区块是给人类读者看的可视化列表，需要标准 Markdown 链接格式（可点击）。如果 Sources 区块也使用 `citation:` 前缀，前端可能会把它再次渲染为特殊格式（双重渲染），导致显示异常。
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>这个区分展示了 Prompt 设计中的**格式协议层**：Prompt 不只是描述行为规范，还在定义输出的格式协议，这个协议被前端代码解析和消费。
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>### 反例驱动的规范
+</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>
+</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>`&lt;citations&gt;` 中包含了大量 ❌/✅ 的反例对比：
 </span></code></pre></div>
 - ❌ WRONG: <code>GitHub 仓库 - 官方源代码和文档</code> (no URL!)
 - ❌ WRONG in Sources: <code>[citation:GitHub Repository](url)</code> (citation prefix is for inline only!)
 - ✅ RIGHT in Sources: <code>[GitHub Repository](https://github.com/bytedance/deer-flow) - 官方源代码和文档</code>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>注意错误示例中还加了括号说明错误原因（`(no URL!)`，`(citation prefix is for inline only!)`）。这是关键的教学技巧：不只展示&quot;什么是错的&quot;，还解释&quot;为什么错&quot;，让模型理解规则背后的原因而非只记住表面规则。
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>### WORKFLOW 的明确步骤化
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>&gt; **中文附注**：
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>&gt;
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>&gt; - ❌ 错误：`GitHub 仓库 - 官方源代码和文档`（没有 URL！）
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>&gt; - ❌ 错误（来源区块中）：`[citation:GitHub Repository](url)`（citation 前缀仅用于行内！）
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>&gt; - ✅ 正确（来源区块中）：`[GitHub Repository](https://github.com/bytedance/deer-flow) - 官方源代码和文档`
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>注意错误示例中还加了括号说明错误原因（`(no URL!)`，`(citation prefix is for inline only!)`）。这是关键的教学技巧：不只展示&quot;什么是错的&quot;，还解释&quot;为什么错&quot;，让模型理解规则背后的原因而非只记住表面规则。
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>### WORKFLOW 的明确步骤化
 </span></code></pre></div>
 <strong>WORKFLOW for Research Tasks:</strong>
 1. Use web_search to find sources → Extract {{title, url, snippet}} from results
 2. Write content with inline citations: <code>claim [citation:Title](url)</code>
 3. Collect all citations in a "Sources" section at the end
 4. NEVER write claims without citations when sources are available
-<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>这个工作流将&quot;如何引用&quot;从规则变成了一个可执行的步骤序列。步骤 1 中的 `→ Extract {{title, url, snippet}}` 特别重要——它告诉模型在使用 `web_search` 之后的第一步是提取标题和 URL，而不是直接开始写作。这防止了一个常见的失败模式：模型先写内容，再发现找不到对应的 URL（因为没有在看到搜索结果时及时记录）。
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>---
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>## 7.8 `&lt;critical_reminders&gt;` 段落原文
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>&gt; **中文附注**：
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>&gt;
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>&gt; **研究任务工作流：**
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>&gt; 1. 使用 web_search 查找来源 → 从结果中提取 {标题, URL, 摘要}
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>&gt; 2. 撰写内容并附行内引用：`声明 [citation:标题](url)`
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>&gt; 3. 在末尾的&quot;来源&quot;区块中收集所有引用
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>&gt; 4. 当有来源可用时，**绝不**写无引用的声明
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>这个工作流将&quot;如何引用&quot;从规则变成了一个可执行的步骤序列。步骤 1 中的 `→ Extract {{title, url, snippet}}` 特别重要——它告诉模型在使用 `web_search` 之后的第一步是提取标题和 URL，而不是直接开始写作。这防止了一个常见的失败模式：模型先写内容，再发现找不到对应的 URL（因为没有在看到搜索结果时及时记录）。
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>---
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>## 7.8 `&lt;critical_reminders&gt;` 段落原文
 </span></code></pre></div>
 <critical_reminders>
 - <strong>Clarification First</strong>: ALWAYS clarify unclear/missing/ambiguous requirements BEFORE starting work - never assume or guess
@@ -1848,31 +1997,52 @@
 - Language Consistency: Keep using the same language as user's
 - Always Respond: Your thinking is internal. You MUST always provide a visible response to the user after thinking.
 &lt;/critical_reminders&gt;
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>当 `subagent_enabled=True` 时，`{subagent_reminder}` 被替换为：
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>&gt; **中文附注**：
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>&gt;
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>&gt; ```
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>&gt; &lt;critical_reminders&gt;
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>&gt; - **澄清优先**：开始工作前**始终**澄清不清晰/缺失/模糊的需求——绝不假设或猜测
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>&gt; {subagent_reminder}- 技能优先：开始**复杂**任务之前，始终加载相关技能
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>&gt; - 渐进加载：按技能中引用的顺序逐步加载资源
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>&gt; - 输出文件：最终交付物必须在 `/mnt/user-data/outputs`
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>&gt; - 文件编辑工作流：修改现有文件时，优先使用 `str_replace` 而非 `write_file`——只发送差异，避免重新发送整个文件（参照 Claude Code 的 Edit 和 Codex 的 apply_patch）。从头编写长篇新内容时，分段写入：第一次 `write_file` 调用创建文件，然后使用 `write_file` 加 append=True 逐节扩展。这使每次工具调用保持小型，避免超大单次写入的流中断超时。（参见 issue #3189。）
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>&gt; - 清晰：直接有帮助，避免不必要的元评论
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>&gt; - 包含图片和 Mermaid：始终欢迎 Markdown 格式的图片和 Mermaid 图表，建议使用 `![图片描述](image_path)` 或 ` ```mermaid ` 在回复或 Markdown 文件中展示图像
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>&gt; - 多任务：更好地利用并行工具调用，一次调用多个工具以提升性能
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>&gt; - 语言一致性：保持与用户相同的语言
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>&gt; - 始终回复：你的思考是内部的。思考之后**必须**始终向用户提供可见的回复。
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>&gt; &lt;/critical_reminders&gt;
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>&gt; ```
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a>
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a>当 `subagent_enabled=True` 时，`{subagent_reminder}` 被替换为：
 </span></code></pre></div>
 - **Orchestrator Mode**: You are a task orchestrator - decompose complex tasks into parallel sub-tasks. **HARD LIMIT: max {n} `task` calls per response.** If &gt;{n} sub-tasks, split into sequential batches of ≤{n}. Synthesize after ALL batches complete.
-<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>---
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>## 7.9 `&lt;critical_reminders&gt;` 的架构意义
-</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>
-</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>`&lt;critical_reminders&gt;` 是 P-01 的最后一个 XML 段落，也是整个系统 Prompt 的&quot;收尾&quot;。
-</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>
-</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>### 近因效应（Recency Effect）的利用
-</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>
-</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>LLM 的注意力分布对位置敏感：紧邻生成点的内容（即 Prompt 的末尾）通常获得更高的激活权重。`&lt;critical_reminders&gt;` 被放在末尾，正是为了利用这种近因效应——让最重要的规则在模型开始生成响应前是&quot;最新鲜&quot;的。
-</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>
-</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>这不是随机的段落排列，而是刻意的位置设计。
-</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>
-</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>### 重复而非重复赘述
-</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>
-</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>`&lt;critical_reminders&gt;` 中的规则几乎都在前面的段落中详细展开过：
-</span><span id="__span-18-16"><a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a>- &quot;Clarification First&quot;在 `&lt;clarification_system&gt;` 中有完整的五场景定义
-</span><span id="__span-18-17"><a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a>- &quot;Skill First&quot;在 `&lt;skill_system&gt;` 中有 Progressive Loading Pattern
-</span><span id="__span-18-18"><a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a>- &quot;Output Files&quot;在 `&lt;working_directory&gt;` 中有详细路径规范
-</span><span id="__span-18-19"><a id="__codelineno-18-19" name="__codelineno-18-19" href="#__codelineno-18-19"></a>
-</span><span id="__span-18-20"><a id="__codelineno-18-20" name="__codelineno-18-20" href="#__codelineno-18-20"></a>`&lt;critical_reminders&gt;` 不是在提供新信息，而是在对已有规则进行**高密度重复**。这种重复的价值在于：对于模型的注意力机制，重要的规则应该在 Prompt 中出现不止一次，末尾的重复确保了这些规则在生成前被再次激活。
-</span><span id="__span-18-21"><a id="__codelineno-18-21" name="__codelineno-18-21" href="#__codelineno-18-21"></a>
-</span><span id="__span-18-22"><a id="__codelineno-18-22" name="__codelineno-18-22" href="#__codelineno-18-22"></a>### File Editing Workflow 的特殊设计
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>&gt; **中文附注**：
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>&gt;
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>&gt; - **编排模式**：你是任务编排者——将复杂任务分解为并行子任务。**硬性限制：每次回复最多 {n} 个 `task` 调用。** 如果子任务数量 &gt; {n}，拆分为每批 ≤{n} 的顺序批次。所有批次完成后再综合结果。
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>---
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>## 7.9 `&lt;critical_reminders&gt;` 的架构意义
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>`&lt;critical_reminders&gt;` 是 P-01 的最后一个 XML 段落，也是整个系统 Prompt 的&quot;收尾&quot;。
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>### 近因效应（Recency Effect）的利用
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>LLM 的注意力分布对位置敏感：紧邻生成点的内容（即 Prompt 的末尾）通常获得更高的激活权重。`&lt;critical_reminders&gt;` 被放在末尾，正是为了利用这种近因效应——让最重要的规则在模型开始生成响应前是&quot;最新鲜&quot;的。
+</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>
+</span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>这不是随机的段落排列，而是刻意的位置设计。
+</span><span id="__span-20-16"><a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a>
+</span><span id="__span-20-17"><a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a>### 重复而非重复赘述
+</span><span id="__span-20-18"><a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a>
+</span><span id="__span-20-19"><a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a>`&lt;critical_reminders&gt;` 中的规则几乎都在前面的段落中详细展开过：
+</span><span id="__span-20-20"><a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a>- &quot;Clarification First&quot;在 `&lt;clarification_system&gt;` 中有完整的五场景定义
+</span><span id="__span-20-21"><a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a>- &quot;Skill First&quot;在 `&lt;skill_system&gt;` 中有 Progressive Loading Pattern
+</span><span id="__span-20-22"><a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a>- &quot;Output Files&quot;在 `&lt;working_directory&gt;` 中有详细路径规范
+</span><span id="__span-20-23"><a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a>
+</span><span id="__span-20-24"><a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a>`&lt;critical_reminders&gt;` 不是在提供新信息，而是在对已有规则进行**高密度重复**。这种重复的价值在于：对于模型的注意力机制，重要的规则应该在 Prompt 中出现不止一次，末尾的重复确保了这些规则在生成前被再次激活。
+</span><span id="__span-20-25"><a id="__codelineno-20-25" name="__codelineno-20-25" href="#__codelineno-20-25"></a>
+</span><span id="__span-20-26"><a id="__codelineno-20-26" name="__codelineno-20-26" href="#__codelineno-20-26"></a>### File Editing Workflow 的特殊设计
 </span></code></pre></div>
 - File Editing Workflow: When revising an existing file, prefer
   `str_replace` over `write_file` — it sends only the diff and avoids
@@ -1882,18 +2052,28 @@
   `write_file` with append=True to extend it section by section. This
   keeps each tool call small and avoids mid-stream chunk-gap timeouts
   on oversized single-shot writes. (See issue #3189.)
-<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>这条规则是整个 `&lt;critical_reminders&gt;` 中最具体的一条，包含了：
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>1. 工具选择建议（`str_replace` vs `write_file`）
-</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>2. 原因（避免重新发送完整文件）
-</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>3. 类比（mirrors Claude Code&#39;s Edit and Codex&#39;s apply_patch）—— 为熟悉其他工具的用户/模型建立认知桥梁
-</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>4. 长文件的分段写入策略（append=True）
-</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>5. 具体的问题引用（&quot;(See issue #3189)&quot;）——这是实际踩坑后的记录，暗示这条规则是从实际故障中提炼的
-</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>
-</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>`(See issue #3189)` 是 DeerFlow 开发日志的引用。这条注释不是面向用户的，是面向维护这个 Prompt 的工程师的——在 Prompt 源代码中记录规则来源，方便未来审查。这是一种在 Prompt 文本中内嵌工程文档的实践。
-</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>
-</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>### &quot;Language Consistency&quot;规则
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>&gt; **中文附注**：
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>&gt;
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>&gt; - 文件编辑工作流：修改现有文件时，优先使用 `str_replace` 而非 `write_file`——只发送差异，避免重新发送整个文件（参照 Claude Code 的 Edit 和 Codex 的 apply_patch）。从头编写长篇新内容时，分段写入：第一次 `write_file` 调用创建文件，然后使用 `write_file` 加 append=True 逐节扩展。这使每次工具调用保持小型，避免超大单次写入的流中断超时。（参见 issue #3189。）
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>这条规则是整个 `&lt;critical_reminders&gt;` 中最具体的一条，包含了：
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>1. 工具选择建议（`str_replace` vs `write_file`）
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>2. 原因（避免重新发送完整文件）
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>3. 类比（mirrors Claude Code&#39;s Edit and Codex&#39;s apply_patch）—— 为熟悉其他工具的用户/模型建立认知桥梁
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>4. 长文件的分段写入策略（append=True）
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>5. 具体的问题引用（&quot;(See issue #3189)&quot;）——这是实际踩坑后的记录，暗示这条规则是从实际故障中提炼的
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>`(See issue #3189)` 是 DeerFlow 开发日志的引用。这条注释不是面向用户的，是面向维护这个 Prompt 的工程师的——在 Prompt 源代码中记录规则来源，方便未来审查。这是一种在 Prompt 文本中内嵌工程文档的实践。
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>### &quot;Language Consistency&quot;规则
 </span></code></pre></div>
 - Language Consistency: Keep using the same language as user's</code></p>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li>语言一致性：保持与用户相同的语言</li>
+</ul>
+</blockquote>
 <p>这条规则解决了一个实践问题：如果用户用中文提问，模型有时会用英文回复（因为训练数据中英文占大多数，或者因为技能文件是英文的）。这条规则建立了一个简单的原则：跟用户保持同一种语言。</p>
 <p>这个规则虽然简单，但其位置（在 <code>&lt;critical_reminders&gt;</code> 中）暗示了它的重要性：语言不一致会严重影响用户体验，值得作为一条"关键提醒"。</p>
 <hr />

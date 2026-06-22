@@ -936,7 +936,18 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="6.5 P-03：技能自演化段落原文">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        技能自演化
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="技能自演化">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -968,7 +979,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         延迟工具的生命周期
@@ -1045,7 +1056,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         本章小结
@@ -1579,26 +1590,65 @@
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>&lt;/skill_system&gt;
 </span></code></pre></div>
-<p><code>{skills_list}</code> 渲染后的实际形态（以 22 个内置技能中的 deep-research 为例）：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&lt;available_skills&gt;
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    &lt;skill&gt;
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        &lt;name&gt;deep-research&lt;/name&gt;
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        &lt;description&gt;Use this skill instead of WebSearch for ANY question that benefits from comprehensive, multi-source research... [built-in]&lt;/description&gt;
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        &lt;location&gt;/mnt/skills/public/deep-research/SKILL.md&lt;/location&gt;
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    &lt;/skill&gt;
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    ... （22 个技能，每个约 4 行）
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>&lt;/available_skills&gt;
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&lt;skill_system&gt;
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>你有访问技能的权限，这些技能为特定任务提供优化的工作流程。每个技能包含最佳实践、框架和对额外资源的引用。
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>**渐进式加载模式：**
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>1. 当用户查询匹配技能的使用场景时，立即使用下方技能标签中提供的 path 属性对技能主文件调用 `read_file`
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>2. 阅读并理解技能的工作流程和指令
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>3. 技能文件包含对同一文件夹下外部资源的引用
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>4. 仅在执行过程中需要时才加载引用的资源
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>5. 精确遵循技能的指令
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>**显式斜杠技能激活：**
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>- 如果用户以 `/&lt;skill-name&gt;` 开始请求，表示明确请求当前轮次使用该技能
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>- 在选择通用工作流程之前，遵循激活的技能
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>- 运行时会为显式斜杠激活注入激活的技能内容；除非注入的技能引用了你需要的支持资源，否则不要再次对该 SKILL.md 调用 `read_file`
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>**技能位于：** {container_base_path}
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>{skill_evolution_section}
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>{skills_list}
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>&lt;/skill_system&gt;
 </span></code></pre></div>
+</blockquote>
+<p><code>{skills_list}</code> 渲染后的实际形态（以 22 个内置技能中的 deep-research 为例）：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&lt;available_skills&gt;
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    &lt;skill&gt;
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        &lt;name&gt;deep-research&lt;/name&gt;
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        &lt;description&gt;Use this skill instead of WebSearch for ANY question that benefits from comprehensive, multi-source research... [built-in]&lt;/description&gt;
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>        &lt;location&gt;/mnt/skills/public/deep-research/SKILL.md&lt;/location&gt;
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    &lt;/skill&gt;
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    ... （22 个技能，每个约 4 行）
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>&lt;/available_skills&gt;
+</span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>这是 <code>{skills_list}</code> 渲染后的 XML 结构示例。每个 <code>&lt;skill&gt;</code> 包含三个字段：
+- <code>&lt;name&gt;</code>：技能名称，也是斜杠激活的标识符（如 <code>/deep-research</code>）
+- <code>&lt;description&gt;</code>：技能适用场景描述，示例译文：「将此技能用于任何能从全面多源研究中获益的问题，以替代 WebSearch……[内置]」
+- <code>&lt;location&gt;</code>：技能文件的完整虚拟路径，直接作为 <code>read_file</code> 工具的参数使用</p>
+</blockquote>
 <hr />
 <h2 id="62-progressive-loading-pattern">6.2 Progressive Loading Pattern 解析<a class="headerlink" href="#62-progressive-loading-pattern" title="Permanent link">&para;</a></h2>
 <p><code>&lt;skill_system&gt;</code> 的核心是五步"渐进式加载模式"：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>**Progressive Loading Pattern:**
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>1. When a user query matches a skill&#39;s use case, immediately call `read_file` on the skill&#39;s main file using the path attribute provided in the skill tag below
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>2. Read and understand the skill&#39;s workflow and instructions
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>3. The skill file contains references to external resources under the same folder
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>4. Load referenced resources only when needed during execution
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>5. Follow the skill&#39;s instructions precisely
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>**Progressive Loading Pattern:**
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>1. When a user query matches a skill&#39;s use case, immediately call `read_file` on the skill&#39;s main file using the path attribute provided in the skill tag below
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>2. Read and understand the skill&#39;s workflow and instructions
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>3. The skill file contains references to external resources under the same folder
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>4. Load referenced resources only when needed during execution
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>5. Follow the skill&#39;s instructions precisely
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p><strong>渐进式加载模式：</strong>
+1. 当用户查询匹配技能的使用场景时，立即使用下方技能标签中提供的 path 属性对技能主文件调用 <code>read_file</code>
+2. 阅读并理解技能的工作流程和指令
+3. 技能文件包含对同一文件夹下外部资源的引用
+4. 仅在执行过程中需要时才加载引用的资源
+5. 精确遵循技能的指令</p>
+</blockquote>
 <p>这五步定义了一个<strong>延迟加载工作流</strong>：</p>
 <ul>
 <li>步骤 1：技能匹配 → 加载主文件（触发点）</li>
@@ -1614,11 +1664,18 @@
 <p><strong>透明性</strong>：用户可以在对话历史中看到模型调用了 <code>read_file("/mnt/skills/public/deep-research/SKILL.md")</code>，而不是一个神秘的"load_skill"调用。这符合"open-source"的透明性立场。</p>
 <hr />
 <h2 id="63-slash-skill-activation">6.3 Slash Skill Activation 设计<a class="headerlink" href="#63-slash-skill-activation" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>**Explicit Slash Skill Activation:**
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>- If the user starts a request with `/&lt;skill-name&gt;`, that skill was explicitly requested for the current turn.
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>- Follow the activated skill before choosing a general workflow.
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>- The runtime injects the activated skill content for explicit slash activations; do not call `read_file` for that SKILL.md again unless the injected skill references supporting resources you need.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>**Explicit Slash Skill Activation:**
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>- If the user starts a request with `/&lt;skill-name&gt;`, that skill was explicitly requested for the current turn.
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>- Follow the activated skill before choosing a general workflow.
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>- The runtime injects the activated skill content for explicit slash activations; do not call `read_file` for that SKILL.md again unless the injected skill references supporting resources you need.
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p><strong>显式斜杠技能激活：</strong>
+- 如果用户以 <code>/&lt;skill-name&gt;</code> 开始请求，表示明确请求当前轮次使用该技能
+- 在选择通用工作流程之前，遵循激活的技能
+- 运行时会为显式斜杠激活注入激活的技能内容；除非注入的技能引用了你需要的支持资源，否则不要再次对该 SKILL.md 调用 <code>read_file</code></p>
+</blockquote>
 <p>这段文字处理了一个重要的边界情况：当用户显式使用 <code>/skill-name</code> 语法激活技能时，系统（<code>SkillActivationMiddleware</code>）会将 SKILL.md 的完整内容直接注入到当前对话的上下文中。</p>
 <p>此时模型需要知道：
 1. 这个技能是被显式请求的，优先级高于任何自动匹配
@@ -1627,11 +1684,11 @@
 <hr />
 <h2 id="64-available_skills-xml">6.4 <code>&lt;available_skills&gt;</code> 的 XML 结构<a class="headerlink" href="#64-available_skills-xml" title="Permanent link">&para;</a></h2>
 <p>每个技能的元数据以如下结构呈现：</p>
-<div class="language-xml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&lt;skill&gt;</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="nt">&lt;name&gt;</span>deep-research<span class="nt">&lt;/name&gt;</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">&lt;description&gt;</span>Use<span class="w"> </span>this<span class="w"> </span>skill<span class="w"> </span>instead<span class="w"> </span>of<span class="w"> </span>WebSearch<span class="w"> </span>for<span class="w"> </span>ANY<span class="w"> </span>question<span class="w"> </span>that<span class="w"> </span>benefits<span class="w"> </span>from<span class="w"> </span>comprehensive,<span class="w"> </span>multi-source<span class="w"> </span>research...<span class="w"> </span>[built-in]<span class="nt">&lt;/description&gt;</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="nt">&lt;location&gt;</span>/mnt/skills/public/deep-research/SKILL.md<span class="nt">&lt;/location&gt;</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nt">&lt;/skill&gt;</span>
+<div class="language-xml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&lt;skill&gt;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="nt">&lt;name&gt;</span>deep-research<span class="nt">&lt;/name&gt;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">&lt;description&gt;</span>Use<span class="w"> </span>this<span class="w"> </span>skill<span class="w"> </span>instead<span class="w"> </span>of<span class="w"> </span>WebSearch<span class="w"> </span>for<span class="w"> </span>ANY<span class="w"> </span>question<span class="w"> </span>that<span class="w"> </span>benefits<span class="w"> </span>from<span class="w"> </span>comprehensive,<span class="w"> </span>multi-source<span class="w"> </span>research...<span class="w"> </span>[built-in]<span class="nt">&lt;/description&gt;</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="nt">&lt;location&gt;</span>/mnt/skills/public/deep-research/SKILL.md<span class="nt">&lt;/location&gt;</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nt">&lt;/skill&gt;</span>
 </span></code></pre></div>
 <p>三个字段的设计逻辑：</p>
 <p><strong><code>&lt;name&gt;</code></strong>：斜杠激活时使用的标识符（<code>/deep-research</code>），也是分类识别的关键词</p>
@@ -1641,24 +1698,45 @@
 <hr />
 <h2 id="65-p-03">6.5 P-03：技能自演化段落原文<a class="headerlink" href="#65-p-03" title="Permanent link">&para;</a></h2>
 <p>当 <code>skill_evolution_enabled=True</code> 时，<code>{skill_evolution_section}</code> 被替换为以下内容：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>## Skill Self-Evolution
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>After completing a task, consider creating or updating a skill when:
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>- The task required 5+ tool calls to resolve
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>- You overcame non-obvious errors or pitfalls
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>- The user corrected your approach and the corrected version worked
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>- You discovered a non-trivial, recurring workflow
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>If you used a skill and encountered issues not covered by it, patch it immediately.
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>Prefer patch over edit. Before creating a new skill, confirm with the user first.
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>Skip simple one-off tasks.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>## Skill Self-Evolution
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>After completing a task, consider creating or updating a skill when:
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>- The task required 5+ tool calls to resolve
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>- You overcame non-obvious errors or pitfalls
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>- The user corrected your approach and the corrected version worked
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>- You discovered a non-trivial, recurring workflow
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>If you used a skill and encountered issues not covered by it, patch it immediately.
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>Prefer patch over edit. Before creating a new skill, confirm with the user first.
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>Skip simple one-off tasks.
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<h2 id="_2">技能自演化<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>完成任务后，在以下情况下考虑创建或更新技能：
+- 任务需要 5 次以上工具调用才能解决
+- 你克服了不明显的错误或陷阱
+- 用户纠正了你的方案，且纠正后的版本有效
+- 你发现了一个非平凡的、可重复的工作流程</p>
+<p>如果你使用了某个技能并遇到它未覆盖的问题，立即修补（patch）它。
+优先修补而非重写（edit）。创建新技能之前，先与用户确认。
+跳过简单的一次性任务。</p>
+</blockquote>
 <h3 id="p-03">P-03 的设计哲学<a class="headerlink" href="#p-03" title="Permanent link">&para;</a></h3>
 <p>这是 DeerFlow 的一个高级特性：Agent 可以创建和更新自己的技能文件（对于 <code>[custom, editable]</code> 技能）。P-03 定义了这个能力的触发条件。</p>
 <p><strong>触发条件的设计</strong>：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>- The task required 5+ tool calls to resolve
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>- You overcame non-obvious errors or pitfalls
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>- The user corrected your approach and the corrected version worked
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>- You discovered a non-trivial, recurring workflow
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>- The task required 5+ tool calls to resolve
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>- You overcame non-obvious errors or pitfalls
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>- The user corrected your approach and the corrected version worked
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>- You discovered a non-trivial, recurring workflow
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li>任务需要 5 次以上工具调用才能解决</li>
+<li>你克服了不明显的错误或陷阱</li>
+<li>用户纠正了你的方案，且纠正后的版本有效</li>
+<li>你发现了一个非平凡的、可重复的工作流程</li>
+</ul>
+</blockquote>
 <p>这四个条件形成了一个<strong>价值过滤器</strong>：只有当任务展现出复用价值时（5+工具调用意味着非平凡工作流；用户纠正意味着模型原始方案有缺陷值得记录；"recurring workflow"意味着会重复出现）才创建技能。</p>
 <p><code>"Skip simple one-off tasks"</code> 是明确的反例，防止模型在每次完成任务后都创建一个新技能（导致技能库爆炸）。</p>
 <p><strong>"Prefer patch over edit"</strong>：patch（追加/局部修改）比 edit（重写）更安全，能保留现有内容的同时添加新发现。这条规则减少了因重写导致的信息丢失风险。</p>
@@ -1666,56 +1744,81 @@
 <hr />
 <h2 id="66-p-07available-deferred-tools">6.6 P-07：<code>&lt;available-deferred-tools&gt;</code> 段落原文<a class="headerlink" href="#66-p-07available-deferred-tools" title="Permanent link">&para;</a></h2>
 <p>当 MCP 工具被配置为延迟加载时，<code>get_deferred_tools_prompt_section()</code> 生成以下内容：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&lt;available-deferred-tools&gt;
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>{deferred_tool_names}
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>&lt;/available-deferred-tools&gt;
-</span></code></pre></div>
-<p>渲染示例（假设有 3 个延迟工具）：</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>&lt;available-deferred-tools&gt;
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>slack_send_message
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>notion_create_page
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>github_create_pr
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>&lt;/available-deferred-tools&gt;
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>{deferred_tool_names}
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>&lt;/available-deferred-tools&gt;
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>延迟工具列表段落的模板形式。<code>{deferred_tool_names}</code> 在运行时替换为实际工具名称列表，每行一个工具名。标签名 <code>available-deferred-tools</code> 本身也是提示信号——告诉模型这些工具"可用但延迟加载"。</p>
+</blockquote>
+<p>渲染示例（假设有 3 个延迟工具）：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>&lt;available-deferred-tools&gt;
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>slack_send_message
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>notion_create_page
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>github_create_pr
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>&lt;/available-deferred-tools&gt;
+</span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>渲染示例：列表中只有工具名称，没有描述、参数或使用指南。模型知道这三个工具存在，但在调用 <code>tool_search</code> 获取完整 schema 之前无法使用它们。</p>
+</blockquote>
 <p>注意：这里只有工具名称，没有描述、没有参数 schema、没有使用指南。这是极简信息设计：<strong>让模型知道工具存在，但不暴露完整 schema</strong>。</p>
-<h3 id="_2">延迟工具的生命周期<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<h3 id="_3">延迟工具的生命周期<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <p>延迟工具机制有四个状态：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>状态 1：工具名称在 &lt;available-deferred-tools&gt; 中
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  → 模型知道工具存在，但无法调用（没有 schema）
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>状态 2：模型调用 tool_search(&quot;slack send&quot;)
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>  → P-25（tool_search 描述）定义了如何搜索
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>状态 3：tool_search 返回工具的完整 schema（OpenAI function calling 格式）
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>  → schema 进入消息历史
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>状态 4：DeferredToolFilterMiddleware 在下一轮将工具&quot;提升&quot;为可绑定
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>  → 模型现在可以直接调用 slack_send_message
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>状态 1：工具名称在 &lt;available-deferred-tools&gt; 中
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>  → 模型知道工具存在，但无法调用（没有 schema）
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>状态 2：模型调用 tool_search(&quot;slack send&quot;)
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>  → P-25（tool_search 描述）定义了如何搜索
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>状态 3：tool_search 返回工具的完整 schema（OpenAI function calling 格式）
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>  → schema 进入消息历史
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>状态 4：DeferredToolFilterMiddleware 在下一轮将工具&quot;提升&quot;为可绑定
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>  → 模型现在可以直接调用 slack_send_message
 </span></code></pre></div>
 <p>这个生命周期确保了：工具信息在 <strong>需要时</strong> 才占用上下文，在 <strong>不需要时</strong> 只是一个名字（约 5 token）。</p>
 <hr />
 <h2 id="67-p-25tool_search">6.7 P-25：<code>tool_search</code> 工具描述（完整原文）<a class="headerlink" href="#67-p-25tool_search" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>Fetches full schema definitions for deferred tools so they can be called.
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>Deferred tools appear by name in &lt;available-deferred-tools&gt; in the system
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>prompt. Until fetched, only the name is known. This tool matches a query
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>against the deferred tools and returns the matched tools complete schemas;
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>once returned, a tool becomes callable.
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>Query forms:
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>  - &quot;select:Read,Edit&quot; -- fetch these exact tools by name
-</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>  - &quot;notebook jupyter&quot; -- keyword search, up to max_results best matches
-</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>  - &quot;+slack send&quot; -- require &quot;slack&quot; in the name, rank by remaining terms
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Fetches full schema definitions for deferred tools so they can be called.
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>Deferred tools appear by name in &lt;available-deferred-tools&gt; in the system
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>prompt. Until fetched, only the name is known. This tool matches a query
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>against the deferred tools and returns the matched tools complete schemas;
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>once returned, a tool becomes callable.
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>Query forms:
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>  - &quot;select:Read,Edit&quot; -- fetch these exact tools by name
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>  - &quot;notebook jupyter&quot; -- keyword search, up to max_results best matches
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>  - &quot;+slack send&quot; -- require &quot;slack&quot; in the name, rank by remaining terms
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>获取延迟工具的完整 schema 定义，以便可以调用它们。</p>
+<p>延迟工具的名称出现在系统 prompt 的 <code>&lt;available-deferred-tools&gt;</code> 中。获取之前，只知道名称——无法调用。此工具将查询与延迟工具匹配，并返回匹配工具的完整 schema；一旦返回，工具即变为可调用状态。</p>
+<p>查询形式：
+- <code>"select:Read,Edit"</code> —— 按名称精确获取这些工具
+- <code>"notebook jupyter"</code> —— 关键词搜索，最多返回 max_results 个最佳匹配
+- <code>"+slack send"</code> —— 要求名称中包含 "slack"，按剩余词排名</p>
+</blockquote>
 <h3 id="p-25">P-25 的结构分析<a class="headerlink" href="#p-25" title="Permanent link">&para;</a></h3>
 <p><strong>第一段</strong>（解释工具的作用）：描述了"为什么需要这个工具"——因为延迟工具只有名字，需要通过这个工具获取完整 schema 才能调用。</p>
 <p><strong>"Until fetched, only the name is known"</strong>：这句话直接回答了模型可能会问的问题：为什么我在 <code>&lt;available-deferred-tools&gt;</code> 中只看到名字，没有参数信息？</p>
 <p><strong>"once returned, a tool becomes callable"</strong>：明确了调用 <code>tool_search</code> 的效果——工具从"知道存在但不能用"变为"可以直接调用"。这是后果描述，帮助模型理解调用这个工具的价值。</p>
 <p><strong>三种查询格式</strong>：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>- &quot;select:Read,Edit&quot; -- fetch these exact tools by name
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>- &quot;notebook jupyter&quot; -- keyword search, up to max_results best matches
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>- &quot;+slack send&quot; -- require &quot;slack&quot; in the name, rank by remaining terms
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>- &quot;select:Read,Edit&quot; -- fetch these exact tools by name
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>- &quot;notebook jupyter&quot; -- keyword search, up to max_results best matches
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>- &quot;+slack send&quot; -- require &quot;slack&quot; in the name, rank by remaining terms
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li><code>"select:Read,Edit"</code> —— 按名称精确获取这些工具</li>
+<li><code>"notebook jupyter"</code> —— 关键词搜索，最多返回 max_results 个最佳匹配</li>
+<li><code>"+slack send"</code> —— 要求名称中包含 "slack"，按剩余词排名</li>
+</ul>
+</blockquote>
 <p>这三种格式覆盖了不同的使用场景：
 - <code>select:</code> 适合已知精确工具名的情况（最高效）
 - 关键词搜索适合不确定名称、需要探索的情况
@@ -1792,7 +1895,7 @@
 <p><strong>建议 3</strong>：对于工具 schema，考虑实现类似 <code>tool_search</code> 的发现机制，而不是将所有工具的 schema 绑定到模型。特别是当 MCP 工具数量超过 10 个时，完整绑定会显著增加上下文体积。</p>
 <p><strong>建议 4</strong>：在系统 Prompt 中明确说明"何时触发加载"的行为规范（如 P-06 的 Progressive Loading Pattern），而不是假设模型会"自然地"在需要时读取文件。</p>
 <hr />
-<h2 id="_3">本章小结<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h2 id="_4">本章小结<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <ul>
 <li>P-06（<code>&lt;skill_system&gt;</code>）通过"渐进式加载模式"实现技能的懒加载：系统 Prompt 中只放元数据（~25 token/技能），完整 SKILL.md 在匹配时按需加载</li>
 <li>P-03（技能自演化段落）通过四个价值过滤条件控制 Agent 何时应该创建/更新自定义技能，防止技能库膨胀</li>

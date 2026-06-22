@@ -1672,6 +1672,30 @@
 </span><span id="__span-1-116"><a id="__codelineno-1-116" name="__codelineno-1-116" href="#__codelineno-1-116"></a>
 </span><span id="__span-1-117"><a id="__codelineno-1-117" name="__codelineno-1-117" href="#__codelineno-1-117"></a>Return ONLY valid JSON, no explanation or markdown.
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>你是一个记忆管理系统。你的任务是分析对话并更新用户的记忆档案。</p>
+<p><strong>占位符</strong>：<code>{current_memory}</code> 为当前记忆状态，<code>{conversation}</code> 为待处理的新对话，<code>{correction_hint}</code> 为可选的纠正提示。</p>
+<p><strong>指令</strong>：（1）分析对话，提取关于用户的重要信息；（2）提取含具体细节（数字、名称、技术名称）的相关事实、偏好和背景；（3）按以下长度指导更新记忆区域。</p>
+<p><strong>在提取事实之前，先进行结构化反思</strong>：
+1. <strong>错误/重试检测</strong>：agent 是否遇到错误、需要重试或产生不正确的结果？若是，将根本原因和正确方法记录为高置信度事实，类别为 <code>"correction"</code>。
+2. <strong>用户纠正检测</strong>：用户是否纠正了 agent 的方向、理解或输出？若是，将正确的解释或方法记录为高置信度事实，类别为 <code>"correction"</code>。只有当类别为 <code>"correction"</code> 且对话中明确提到错误时，才在 <code>"sourceError"</code> 中包含出错信息。
+3. <strong>项目约束发现</strong>：对话中是否发现了项目特定的约束？若是，用最合适的类别和置信度记录这些事实。</p>
+<p><strong>用户上下文</strong>（当前状态——简洁摘要）：
+- <code>workContext</code>：职业角色、公司、关键项目、主要技术（2-3 句）
+- <code>personalContext</code>：语言、沟通偏好、主要兴趣（1-2 句）
+- <code>topOfMind</code>：多个持续进行的关注领域和优先事项（3-5 句，详细段落）；注：捕捉<strong>多个</strong>并发关注领域，而非只记录单个任务</p>
+<p><strong>历史上下文</strong>（时间轴视图——详细段落）：
+- <code>recentMonths</code>：近 1-3 个月详细活动摘要（4-6 句或 1-2 段）
+- <code>earlierContext</code>：3-12 个月前的重要历史模式（3-5 句或 1 段）
+- <code>longTermBackground</code>：持久的基础背景（2-4 句）</p>
+<p><strong>事实提取</strong>：提取具体可量化细节、专有名词（公司/项目/技术名）、版本号。
+- 类别：<code>preference</code>（偏好）/ <code>knowledge</code>（知识）/ <code>context</code>（背景）/ <code>behavior</code>（行为）/ <code>goal</code>（目标）/ <code>correction</code>（纠正：明确的 agent 错误或用户纠正，含正确方法）
+- 置信度：0.9-1.0 明确陈述 / 0.7-0.8 强烈暗示 / 0.5-0.6 推断模式（谨慎使用）</p>
+<p><strong>重要规则</strong>：只有存在有意义的新信息时才设置 <code>shouldUpdate=true</code>；<code>correction</code> 类置信度 ≥ 0.95；只有纠正事实且先前错误在对话中明确陈述时才填写 <code>sourceError</code>；删除被新信息矛盾的旧事实；保留技术、公司、项目的确切名称；多语言专有名词保持原始形式。</p>
+<p><strong>重要</strong>：<strong>不得</strong>在记忆中记录文件上传事件。上传的文件是会话特有且临时的——在未来的会话中将无法访问。记录上传事件会在后续对话中造成混乱。</p>
+<p>只返回有效的 JSON，不加解释和 Markdown。</p>
+</blockquote>
 <hr />
 <h2 id="93-p-10">9.3 P-10 结构解析：六个记忆区域<a class="headerlink" href="#93-p-10" title="Permanent link">&para;</a></h2>
 <p>P-10 定义了两层记忆结构，共六个区域：</p>
@@ -1680,16 +1704,35 @@
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>- personalContext: Languages, communication preferences, key interests (1-2 sentences)
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>- topOfMind: Multiple ongoing focus areas and priorities (3-5 sentences, detailed paragraph)
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li><code>workContext</code>：职业角色、公司、关键项目、主要技术（2-3 句）</li>
+<li><code>personalContext</code>：语言、沟通偏好、主要兴趣（1-2 句）</li>
+<li><code>topOfMind</code>：多个持续进行的关注领域和优先事项（3-5 句，详细段落）</li>
+</ul>
+</blockquote>
 <p>这三个区域是<strong>当前状态的快照</strong>：用户现在是谁（<code>workContext</code>）、用户的个人特征（<code>personalContext</code>）、用户正在关注什么（<code>topOfMind</code>）。</p>
 <p><code>topOfMind</code> 的设计特别值得注意：</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Note: This captures SEVERAL concurrent focus areas, not just one task
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：注：此项捕捉<strong>多个</strong>并发关注领域，而非只记录单个任务。</p>
+</blockquote>
 <p>这个设计反映了真实用户行为的多线程性：用户同时在推进多个项目、追踪多个技术方向、学习多件事情。如果 <code>topOfMind</code> 只记录最近一次对话的话题，记忆会迅速退化为对最后一次交互的重复。通过强调"SEVERAL concurrent focus areas"，P-10 引导模型保持记忆的多维度性。</p>
 <h3 id="history">第二层：历史上下文（History）——时间轴视图<a class="headerlink" href="#history" title="Permanent link">&para;</a></h3>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>- recentMonths: Last 1-3 months (4-6 sentences or 1-2 paragraphs)
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>- earlierContext: 3-12 months ago (3-5 sentences or 1 paragraph)
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>- longTermBackground: Overall/foundational information (2-4 sentences)
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li><code>recentMonths</code>：近 1-3 个月（4-6 句或 1-2 段）</li>
+<li><code>earlierContext</code>：3-12 个月前（3-5 句或 1 段）</li>
+<li><code>longTermBackground</code>：总体/基础信息（2-4 句）</li>
+</ul>
+</blockquote>
 <p>三个时间段的划分创建了一个<strong>记忆衰减模型</strong>：
 - 最近 1-3 个月：详细，包含具体的技术探索和工作内容
 - 3-12 个月前：概括，只保留"重要的历史模式"
@@ -1703,6 +1746,13 @@
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>2. User Correction Detection: Did the user correct the agent&#39;s direction, understanding, or output?
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>3. Project Constraint Discovery: Were any project-specific constraints discovered?
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>在提取事实之前，先对对话进行结构化反思：
+1. 错误/重试检测：agent 是否遇到错误、需要重试或产生不正确的结果？
+2. 用户纠正检测：用户是否纠正了 agent 的方向、理解或输出？
+3. 项目约束发现：对话中是否发现了项目特定的约束？</p>
+</blockquote>
 <p>这个步骤强制模型<strong>在提取事实之前先做一轮专项扫描</strong>，而不是直接跳入"找出所有重要信息"。</p>
 <p>为什么需要先扫描错误和纠正？因为这类信息对未来交互最有价值，但也最容易被忽略：</p>
 <ul>
@@ -1716,13 +1766,22 @@
 <p>P-10 中六个事实分类里，<code>correction</code> 是设计最特殊的一个：</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>- correction: Explicit agent mistakes or user corrections, including the correct approach
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：<code>correction</code>（纠正）：明确的 agent 错误或用户纠正，包括正确方法。</p>
+</blockquote>
 <p><strong>高置信度规则</strong>：
 <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>- Use category &quot;correction&quot; for explicit agent mistakes or user corrections; assign confidence &gt;= 0.95 when the correction is explicit
 </span></code></pre></div></p>
+<blockquote>
+<p><strong>中文附注</strong>：对明确的 agent 错误或用户纠正使用 <code>"correction"</code> 类别；纠正明确时，置信度 ≥ 0.95。</p>
+</blockquote>
 <p>普通事实的置信度可以低至 0.5（推断的模式），但 <code>correction</code> 类别的置信度被强制设为 ≥ 0.95。这反映了一个重要的认知：<strong>明确的纠正比任何推断都更确定</strong>，应该以最高置信度记录，以确保它在未来注入时不会被低置信度事实挤出。</p>
 <p><strong><code>sourceError</code> 字段的条件性</strong>：
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>- Include &quot;sourceError&quot; only for explicit correction facts when the prior mistake or wrong approach is clearly stated; omit it otherwise
 </span></code></pre></div></p>
+<blockquote>
+<p><strong>中文附注</strong>：只有当类别为纠正事实且先前的错误或错误方法在对话中明确陈述时，才包含 <code>"sourceError"</code>；否则省略。</p>
+</blockquote>
 <p><code>sourceError</code> 记录的是"之前的错误是什么"，这样在未来类似场景发生时，模型可以知道不只是"要做 Y"，还是"因为 X 是错的，要做 Y"。</p>
 <hr />
 <h2 id="96">9.6 事实置信度分级<a class="headerlink" href="#96" title="Permanent link">&para;</a></h2>
@@ -1731,6 +1790,15 @@
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>  * 0.7-0.8: Strongly implied from actions/discussions
 </span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>  * 0.5-0.6: Inferred patterns (use sparingly, only for clear patterns)
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li>置信度：</li>
+<li>0.9-1.0：明确陈述的事实（"我在 X 工作"，"我的职位是 Y"）</li>
+<li>0.7-0.8：从行动/讨论中强烈暗示的</li>
+<li>0.5-0.6：推断的模式（谨慎使用，仅用于明显的模式）</li>
+</ul>
+</blockquote>
 <p>三个置信度区间对应三种信息来源：</p>
 <table>
 <thead>
@@ -1771,6 +1839,9 @@
 <p>P-10 要求输出纯 JSON，不带任何解释或 Markdown 标记：</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Return ONLY valid JSON, no explanation or markdown.
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：只返回有效的 JSON，不加解释和 Markdown。</p>
+</blockquote>
 <p>JSON 格式的 <code>shouldUpdate</code> 字段设计很有意思：</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">&quot;workContext&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;shouldUpdate&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="err">/</span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
 </span></code></pre></div>
@@ -1786,6 +1857,9 @@
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>session-specific and ephemeral — they will not be accessible in future sessions.
 </span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>Recording upload events causes confusion in subsequent conversations.
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：<strong>重要</strong>：<strong>不得</strong>在记忆中记录文件上传事件。上传的文件是会话特有且临时的——在未来的会话中将无法访问。记录上传事件会在后续对话中造成混乱。</p>
+</blockquote>
 <p>这条规则解决了一个实际问题：如果记忆记录了"用户上传了 report.pdf"，下次会话时系统会以为这个文件仍然可访问，但实际上每次会话的上传文件是独立的临时文件。这种跨会话的路径引用会导致模型在未来尝试访问不存在的文件，造成混乱。</p>
 <p>这是一条从实际故障中提炼的规则，不是抽象的设计原则。</p>
 <p>代码层面也有对应的预处理：</p>
@@ -1824,6 +1898,21 @@
 </span><span id="__span-16-25"><a id="__codelineno-16-25" name="__codelineno-16-25" href="#__codelineno-16-25"></a>
 </span><span id="__span-16-26"><a id="__codelineno-16-26" name="__codelineno-16-26" href="#__codelineno-16-26"></a>Return ONLY valid JSON.
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>从此消息中提取关于用户的事实性信息。</p>
+<p>消息：<code>{message}</code></p>
+<p>以此 JSON 格式提取事实：<code>{ "facts": [{ "content": "...", "category": "...", "confidence": 0.0-1.0 }] }</code></p>
+<p>类别：
+- <code>preference</code>：用户偏好（喜好/厌恶、风格、工具）
+- <code>knowledge</code>：用户的专业知识或知识领域
+- <code>context</code>：背景信息（地点、工作、项目）
+- <code>behavior</code>：行为模式
+- <code>goal</code>：用户的目标或目的
+- <code>correction</code>：应避免重复的明确纠正或错误</p>
+<p>规则：只提取清晰、具体的事实；置信度应反映确定性（明确陈述 = 0.9+，暗示 = 0.6-0.8）；跳过模糊或临时信息。</p>
+<p>只返回有效的 JSON。</p>
+</blockquote>
 <h3 id="p-11-p-10">P-11 与 P-10 的分工<a class="headerlink" href="#p-11-p-10" title="Permanent link">&para;</a></h3>
 <p>P-11 是 P-10 的轻量版本，两者处理不同的触发场景：</p>
 <table>
@@ -1883,6 +1972,18 @@
 </span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>- [knowledge | 0.90] User has 5+ years experience with LangChain
 </span><span id="__span-17-15"><a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>...
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>（记忆注入示例格式）：</p>
+<p>用户上下文：
+- 工作：[workContext.summary]
+- 个人：[personalContext.summary]
+- 当前关注：[topOfMind.summary]</p>
+<p>历史：
+- 近期：[recentMonths.summary]
+- 早期：[earlierContext.summary]
+- 背景：[longTermBackground.summary]</p>
+<p>事实（格式：<code>[类别 | 置信度] 内容</code>，按置信度降序排列，高置信度事实优先出现）</p>
+</blockquote>
 <p>这段文本被包裹在 <code>&lt;memory&gt;</code> 标签中，通过 <code>DynamicContextMiddleware</code> 注入到每次请求的 <code>&lt;system-reminder&gt;</code> 块中。</p>
 <p>事实格式 <code>[category | confidence] content</code> 提供了足够的元信息让主 Agent 在使用记忆时做出判断：置信度低的推断事实（如 <code>0.62</code>）会比显式陈述事实（<code>0.95</code>）获得更少的信任权重。</p>
 <hr />

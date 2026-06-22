@@ -1746,6 +1746,18 @@
 </span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>- **bash**: Command execution specialist...
 </span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>&lt;/subagent_system&gt;
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p><code>&lt;subagent_system&gt;</code>
+<strong>🚀 子 AGENT 模式已激活——分解、委派、综合</strong>
+……
+<strong>⛔ 硬性并发限制：每次回复最多 3 个 <code>task</code> 调用。这不是可选项。</strong>
+……
+<strong>可用子 Agent：</strong>
+- <strong>general-purpose</strong>：适用于需要复杂多步任务的能力 agent……
+- <strong>bash</strong>：命令执行专家……
+<code>&lt;/subagent_system&gt;</code></p>
+</blockquote>
 <p>这个段落在 Agent 的整个生命周期中内容固定。改变并发限制（<code>n</code>）或增减子 Agent 类型，需要重新构建 Agent。</p>
 <p><strong>为什么这样设计而不是运行时动态注入？</strong></p>
 <p>P-02 的内容约有 1000 token，如果在每次请求时动态生成并注入，会破坏前缀缓存（原则一）。但它的内容本身不需要每次改变——子 Agent 的可用列表和并发限制在配置时就确定了，不是会话状态的一部分。</p>

@@ -1794,6 +1794,16 @@
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>4. Risky Operations (risk_confirmation)
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>5. Suggestions (suggestion)
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ol>
+<li>缺失信息（<code>missing_info</code>）</li>
+<li>模糊需求（<code>ambiguous_requirement</code>）</li>
+<li>方案选择（<code>approach_choice</code>）</li>
+<li>风险操作（<code>risk_confirmation</code>）</li>
+<li>建议（<code>suggestion</code>）</li>
+</ol>
+</blockquote>
 <p>每个场景都有：
 - 正式名称（英文标识符，出现在代码参数中）
 - 自然语言描述
@@ -1826,16 +1836,31 @@
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>- Each response, you may include at most {n} `task` tool calls. Any excess calls are
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  silently discarded by the system — you will lose that work.
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>⛔ <strong>硬性并发限制：每次回复最多 {n} 个 <code>task</code> 调用。这不是可选项。</strong>
+- 每次回复，你最多可以包含 {n} 个 task 工具调用。超出的调用会被系统<strong>静默丢弃</strong>——你会失去那些工作。</p>
+</blockquote>
 <p>不是说"最多调用 {n} 次"，而是加了"<code>silently discarded</code> — you will <strong>lose that work</strong>"。这个后果描述（工作会被悄悄丢弃）比单纯的数字限制有力得多。</p>
 <p><strong>P-01 <code>&lt;clarification_system&gt;</code> 中的执行中断说明</strong>：</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>After calling ask_clarification, execution will be interrupted automatically
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>调用 ask_clarification 后，执行将被自动中断。</p>
+</blockquote>
 <p>不是"调用后等待用户回应"，而是"执行将自动中断"——这传递了一个关键信息：这不是礼貌性的暂停，而是系统级的强制中断。</p>
 <p><strong>P-22 <code>task</code> 工具描述</strong>：</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>When NOT to use this tool:
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>- Simple, single-step operations (use tools directly)
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>- Tasks requiring user interaction or clarification
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>不应使用此工具的情况：
+- 简单的单步操作（直接使用工具）
+- 需要用户交互或澄清的任务</p>
+</blockquote>
 <p>通过明确"不应用在哪里"（而非只说"应用在哪里"）来防止工具被滥用。工具的误用往往来自边界不清，而不是使用者不了解工具能做什么。</p>
 <h3 id="_6">设计动机<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
 <p>基于权威的约束（"你必须..."、"禁止..."）依赖模型对权威的服从，这种服从在上下文压力下可能失效。基于后果的约束（"如果你这样做，结果是..."）则触发模型的因果推理能力——模型会将后果纳入自己的决策计算，而不是单纯靠"服从规则"来约束行为。</p>
@@ -1854,6 +1879,16 @@
 </span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>- Simple, single-step operations (use tools directly)
 </span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>- Tasks requiring user interaction or clarification
 </span></code></pre></div></p>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>何时使用此工具：
+- 需要多个步骤或工具的复杂任务
+- 会产生大量输出的任务
+……</p>
+<p>何时不使用此工具：
+- 简单的单步操作（直接使用工具）
+- 需要用户交互或澄清的任务</p>
+</blockquote>
 <p>P-21（<code>ask_clarification</code> 工具描述）：
 <div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Use this tool when you encounter situations where you cannot proceed
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>without user input:
@@ -1864,12 +1899,29 @@
 </span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>- Ask ONE clarification at a time for clarity
 </span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>- Do not make assumptions when clarification is needed
 </span></code></pre></div></p>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>当遇到无法在没有用户输入的情况下继续的情形时，使用此工具：
+- 信息缺失
+- 需求模糊
+……</p>
+<p>最佳实践：
+- 一次只提出<strong>一个</strong>澄清问题，保持清晰
+- 需要澄清时，不得擅自做假设</p>
+</blockquote>
 <p>P-18（通用子 Agent 描述）：
 <div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>Use this subagent when:
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>- The task requires both exploration and modification
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>...
 </span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>Do NOT use for simple, single-step operations.
 </span></code></pre></div></p>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>在以下情况使用此子 agent：
+- 任务同时需要探索和修改
+……</p>
+<p>不要用于简单的单步操作。</p>
+</blockquote>
 <p>整个 P-02 的子 Agent 编排段落也是以"何时用/何时不用"作为骨架。</p>
 <p>同样的模式出现在所有 22 个 SKILL.md 文件中，几乎每一个都包含"When to Use This Skill"和隐式的不适用场景说明。</p>
 <h3 id="_7">设计动机<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
@@ -1908,6 +1960,15 @@
 </span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>- Output Files...
 </span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>&lt;/critical_reminders&gt;
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p><code>&lt;critical_reminders&gt;</code>（关键提醒）
+- <strong>澄清优先</strong>：始终澄清……
+- <strong>技能优先</strong>：始终加载相关技能……
+- 渐进加载……
+- 输出文件……
+<code>&lt;/critical_reminders&gt;</code></p>
+</blockquote>
 <p>这些规则并不是全新的内容——它们在前面的段落中都有详细展开。<code>&lt;critical_reminders&gt;</code> 的作用是<strong>重复强调</strong>：通过在 Prompt 末尾再次列出最重要的规则，确保它们在模型生成响应前是"新鲜"的（距离生成点最近的内容通常有更高的注意力权重）。</p>
 <p><strong>❌/✅ 对比格式</strong>：<code>&lt;clarification_system&gt;</code> 中的 STRICT ENFORCEMENT 段落：
 <div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>- ❌ DO NOT start working and then ask for clarification mid-execution
@@ -1915,6 +1976,15 @@
 </span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>...
 </span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>- ✅ Analyze the request in thinking → Identify unclear aspects → Ask BEFORE any action
 </span></code></pre></div></p>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li>❌ 不得先开始工作再在执行中途要求澄清</li>
+<li>❌ 不得以"效率"为由跳过澄清
+……</li>
+<li>✅ 在思考中分析请求 → 识别不清晰之处 → 在任何行动前询问</li>
+</ul>
+</blockquote>
 <p>这种视觉对比格式降低了错误行为和正确行为之间的混淆概率。</p>
 <p><strong>分层的 ⛔/‼️/✅ 信号</strong>：P-02 中用 ⛔ 标记硬性限制，与普通规则在视觉上区分开来。</p>
 <h3 id="_9">设计动机<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>

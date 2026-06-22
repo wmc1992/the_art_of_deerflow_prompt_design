@@ -2024,6 +2024,11 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>约束型：You MUST NOT do X.
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>后果型：If you do X, Y will happen (and Y is bad for you/the user).
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>约束型：你<strong>不得</strong>做 X。
+后果型：如果你做了 X，Y 将会发生（而 Y 对你/用户有害）。</p>
+</blockquote>
 <h3 id="_15">工程价值：减少"规则执行者"心态<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h3>
 <p>"规则执行者"心态会导致模型寻找规则的边界（"这个特殊情况算不算 X"），而后果驱动约束直接激活目标导向的推理（"我不想 Y 发生，所以我不做 X"）。</p>
 <p><code>silently discarded</code> 比 <code>not allowed</code> 更有威慑力的原因：
@@ -2056,6 +2061,19 @@
 </span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>- Purely conversational or informational requests
 </span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>...
 </span></code></pre></div></p>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>何时使用：
+- 复杂的多步任务（3 个以上不同步骤）
+- 需要仔细规划和执行的非平凡任务
+- 用户明确要求 todo 列表
+……</p>
+<p>何时不使用：
+- 单一、直接的任务
+- 平凡任务（少于 3 步）
+- 纯粹的对话或信息性请求
+……</p>
+</blockquote>
 <h3 id="_18">模式本质<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
 <p>对任何功能/工具/行为，同时定义<strong>适用边界</strong>（应该使用的情形）和<strong>排斥边界</strong>（不应该使用的情形），而不是只定义其中一侧。</p>
 <h3 id="_19">工程价值：防止过用与欠用<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
@@ -2083,6 +2101,12 @@
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>- **code** (/code): Write, review, debug code in any language. [...]
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>- **deep-research** (/deep-research): Conduct comprehensive multi-step research. [...]
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>可用技能：
+- <strong>code</strong>（/code）：用任何编程语言编写、审查、调试代码。[……]
+- <strong>deep-research</strong>（/deep-research）：进行全面的多步骤深度研究。[……]</p>
+</blockquote>
 <p>只有当用户明确使用 slash 命令（<code>/code</code>）时，才通过 <code>read_file</code> 工具加载对应技能的完整内容。</p>
 <p>类似地，MCP 工具的完整 schema 在系统 Prompt 中只显示工具名称（<code>&lt;available-deferred-tools&gt;</code>），schema 需要通过 <code>tool_search</code> 工具查询后才注入。</p>
 <h3 id="_22">模式本质<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h3>
@@ -2116,6 +2140,13 @@
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>topOfMind (3-5 sentences, detailed paragraph)
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>recentMonths (4-6 sentences or 1-2 paragraphs)
 </span></code></pre></div></p>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>workContext（工作背景）：2–3 句
+personalContext（个人背景）：1–2 句
+topOfMind（近期关注）：3–5 句，详细段落
+recentMonths（近几个月）：4–6 句或 1–2 段</p>
+</blockquote>
 <p>每个区域的指定长度不同，反映了每个区域对记忆质量的重要程度。</p>
 <h3 id="_25">模式本质<a class="headerlink" href="#_25" title="Permanent link">&para;</a></h3>
 <p>在 Prompt 中，根据每个规则/模块对模型行为影响的重要程度，分配不同密度的说明：

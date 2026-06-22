@@ -1509,87 +1509,202 @@
 - Single task = No value from subagents = Execute directly
 - For &gt;{n} sub-tasks, use sequential batches of {n} across multiple turns
 </subagent_system>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>---
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>## 8.2 三步编排模型解析
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>P-02 的首段定义了编排者（Orchestrator）的核心工作流：
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&gt; **中文附注**：
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>&gt;
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>&gt; ```
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>&gt; &lt;subagent_system&gt;
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>&gt; **🚀 子 AGENT 模式已激活——分解、委派、综合**
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>&gt;
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>&gt; 你正在启用子 agent 能力运行。你的角色是**任务编排者**：
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>&gt; 1. **分解**：将复杂任务拆分为并行子任务
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>&gt; 2. **委派**：使用并行的 `task` 调用同时启动多个子 agent
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>&gt; 3. **综合**：收集并整合结果成为连贯答案
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>&gt;
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>&gt; **核心原则：复杂任务应分解并分发给多个子 agent 并行执行。**
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>&gt;
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>&gt; **⛔ 硬性并发限制：每次回复最多 {n} 个 `task` 调用。这不是可选项。**
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>&gt; - 每次回复，你最多可以包含 **{n}** 个 `task` 工具调用。超出的调用会被系统**静默丢弃**——你会失去那些工作。
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>&gt; - **在启动子 agent 之前，你必须在思考中计数子任务：**
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>&gt;   - 如果数量 ≤ {n}：本次回复全部启动。
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>&gt;   - 如果数量 &gt; {n}：**本轮选择最重要/最基础的 {n} 个子任务**，其余留到下一轮。
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>&gt; - **多批次执行**（超过 {n} 个子任务时）：
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>&gt;   - 第 1 轮：并行启动子任务 1-{n} → 等待结果
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>&gt;   - 第 2 轮：并行启动下一批 → 等待结果
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>&gt;   - … 继续直到所有子任务完成
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>&gt;   - 最终轮：将所有结果综合成连贯答案
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>&gt; - **示例思考模式**：&quot;我识别出 6 个子任务。由于每轮限制为 {n}，我将先启动前 {n} 个，其余在下一轮处理。&quot;
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>&gt;
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>&gt; **可用子 Agent：**
+</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>&gt; {available_subagents}
+</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>&gt;
+</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>&gt; **你的编排策略：**
+</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>&gt;
+</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>&gt; ✅ **分解 + 并行执行（首选方案）：**
+</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>&gt;
+</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>&gt; 对于复杂查询，将其分解为专注的子任务并分批并行执行（每轮最多 {n} 个）：
+</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>&gt;
+</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>&gt; **示例 1：&quot;腾讯股价为什么下跌？&quot;（3 个子任务 → 1 批次）**
+</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>&gt; → 第 1 轮：并行启动 3 个子 agent：
+</span><span id="__span-3-37"><a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>&gt; - 子 agent 1：近期财务报告、盈利数据和营收趋势
+</span><span id="__span-3-38"><a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>&gt; - 子 agent 2：负面新闻、争议和监管问题
+</span><span id="__span-3-39"><a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a>&gt; - 子 agent 3：行业趋势、竞争对手表现和市场情绪
+</span><span id="__span-3-40"><a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>&gt; → 第 2 轮：综合结果
+</span><span id="__span-3-41"><a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a>&gt;
+</span><span id="__span-3-42"><a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a>&gt; **示例 2：&quot;对比 5 个云服务商&quot;（5 个子任务 → 多批次）**
+</span><span id="__span-3-43"><a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>&gt; → 第 1 轮：并行启动 {n} 个子 agent（第一批）
+</span><span id="__span-3-44"><a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a>&gt; → 第 2 轮：并行启动剩余子 agent
+</span><span id="__span-3-45"><a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a>&gt; → 最终轮：将所有结果综合为全面对比
+</span><span id="__span-3-46"><a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a>&gt;
+</span><span id="__span-3-47"><a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a>&gt; **示例 3：&quot;重构认证系统&quot;**
+</span><span id="__span-3-48"><a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a>&gt; → 第 1 轮：并行启动 3 个子 agent：
+</span><span id="__span-3-49"><a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a>&gt; - 子 agent 1：分析当前认证实现和技术债务
+</span><span id="__span-3-50"><a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a>&gt; - 子 agent 2：研究最佳实践和安全模式
+</span><span id="__span-3-51"><a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a>&gt; - 子 agent 3：审查相关测试、文档和漏洞
+</span><span id="__span-3-52"><a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>&gt; → 第 2 轮：综合结果
+</span><span id="__span-3-53"><a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a>&gt;
+</span><span id="__span-3-54"><a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a>&gt; ✅ **使用并行子 agent（每轮最多 {n} 个）的情况：**
+</span><span id="__span-3-55"><a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a>&gt; - **复杂研究问题**：需要多个信息来源或视角
+</span><span id="__span-3-56"><a id="__codelineno-3-56" name="__codelineno-3-56" href="#__codelineno-3-56"></a>&gt; - **多方面分析**：任务有几个独立维度需要探索
+</span><span id="__span-3-57"><a id="__codelineno-3-57" name="__codelineno-3-57" href="#__codelineno-3-57"></a>&gt; - **大型代码库**：需要同时分析不同部分
+</span><span id="__span-3-58"><a id="__codelineno-3-58" name="__codelineno-3-58" href="#__codelineno-3-58"></a>&gt; - **全面调查**：需要从多个角度彻底覆盖的问题
+</span><span id="__span-3-59"><a id="__codelineno-3-59" name="__codelineno-3-59" href="#__codelineno-3-59"></a>&gt;
+</span><span id="__span-3-60"><a id="__codelineno-3-60" name="__codelineno-3-60" href="#__codelineno-3-60"></a>&gt; ❌ **不使用子 agent（直接执行）的情况：**
+</span><span id="__span-3-61"><a id="__codelineno-3-61" name="__codelineno-3-61" href="#__codelineno-3-61"></a>&gt; - **任务无法分解**：如果无法拆分为 2+ 有意义的并行子任务，直接执行
+</span><span id="__span-3-62"><a id="__codelineno-3-62" name="__codelineno-3-62" href="#__codelineno-3-62"></a>&gt; - **超简单操作**：读取一个文件、快速编辑、单个命令
+</span><span id="__span-3-63"><a id="__codelineno-3-63" name="__codelineno-3-63" href="#__codelineno-3-63"></a>&gt; - **需要立即澄清**：必须先询问用户
+</span><span id="__span-3-64"><a id="__codelineno-3-64" name="__codelineno-3-64" href="#__codelineno-3-64"></a>&gt; - **元对话**：关于对话历史的问题
+</span><span id="__span-3-65"><a id="__codelineno-3-65" name="__codelineno-3-65" href="#__codelineno-3-65"></a>&gt; - **顺序依赖**：每步依赖前一步的结果（自己顺序执行这些步骤）
+</span><span id="__span-3-66"><a id="__codelineno-3-66" name="__codelineno-3-66" href="#__codelineno-3-66"></a>&gt;
+</span><span id="__span-3-67"><a id="__codelineno-3-67" name="__codelineno-3-67" href="#__codelineno-3-67"></a>&gt; **关键工作流**（在每次行动前严格遵循）：
+</span><span id="__span-3-68"><a id="__codelineno-3-68" name="__codelineno-3-68" href="#__codelineno-3-68"></a>&gt; 1. **计数**：在思考中列出所有子任务并明确计数：&quot;我有 N 个子任务&quot;
+</span><span id="__span-3-69"><a id="__codelineno-3-69" name="__codelineno-3-69" href="#__codelineno-3-69"></a>&gt; 2. **规划批次**：如果 N &gt; {n}，明确规划哪些子任务在哪批：
+</span><span id="__span-3-70"><a id="__codelineno-3-70" name="__codelineno-3-70" href="#__codelineno-3-70"></a>&gt;    - &quot;批次 1（本轮）：前 {n} 个子任务&quot;
+</span><span id="__span-3-71"><a id="__codelineno-3-71" name="__codelineno-3-71" href="#__codelineno-3-71"></a>&gt;    - &quot;批次 2（下一轮）：下一批子任务&quot;
+</span><span id="__span-3-72"><a id="__codelineno-3-72" name="__codelineno-3-72" href="#__codelineno-3-72"></a>&gt; 3. **执行**：仅启动当前批次（最多 {n} 个 `task` 调用）。不要启动未来批次的子任务。
+</span><span id="__span-3-73"><a id="__codelineno-3-73" name="__codelineno-3-73" href="#__codelineno-3-73"></a>&gt; 4. **重复**：结果返回后，启动下一批。继续直到所有批次完成。
+</span><span id="__span-3-74"><a id="__codelineno-3-74" name="__codelineno-3-74" href="#__codelineno-3-74"></a>&gt; 5. **综合**：所有批次完成后，综合所有结果。
+</span><span id="__span-3-75"><a id="__codelineno-3-75" name="__codelineno-3-75" href="#__codelineno-3-75"></a>&gt; 6. **无法分解** → 使用可用工具直接执行
+</span><span id="__span-3-76"><a id="__codelineno-3-76" name="__codelineno-3-76" href="#__codelineno-3-76"></a>&gt;
+</span><span id="__span-3-77"><a id="__codelineno-3-77" name="__codelineno-3-77" href="#__codelineno-3-77"></a>&gt; **⛔ 违规警告：在单次回复中发起超过 {n} 个 `task` 调用是硬性错误。系统会丢弃多余的调用，你会失去那些工作。务必分批。**
+</span><span id="__span-3-78"><a id="__codelineno-3-78" name="__codelineno-3-78" href="#__codelineno-3-78"></a>&gt;
+</span><span id="__span-3-79"><a id="__codelineno-3-79" name="__codelineno-3-79" href="#__codelineno-3-79"></a>&gt; **记住：子 agent 是为并行分解而生，不是用来包装单个任务的。**
+</span><span id="__span-3-80"><a id="__codelineno-3-80" name="__codelineno-3-80" href="#__codelineno-3-80"></a>&gt;
+</span><span id="__span-3-81"><a id="__codelineno-3-81" name="__codelineno-3-81" href="#__codelineno-3-81"></a>&gt; **工作原理：**
+</span><span id="__span-3-82"><a id="__codelineno-3-82" name="__codelineno-3-82" href="#__codelineno-3-82"></a>&gt; - `task` 工具在后台异步运行子 agent
+</span><span id="__span-3-83"><a id="__codelineno-3-83" name="__codelineno-3-83" href="#__codelineno-3-83"></a>&gt; - 后端自动轮询完成状态（你不需要轮询）
+</span><span id="__span-3-84"><a id="__codelineno-3-84" name="__codelineno-3-84" href="#__codelineno-3-84"></a>&gt; - 工具调用会阻塞，直到子 agent 完成工作
+</span><span id="__span-3-85"><a id="__codelineno-3-85" name="__codelineno-3-85" href="#__codelineno-3-85"></a>&gt; - 完成后，结果直接返回给你
+</span><span id="__span-3-86"><a id="__codelineno-3-86" name="__codelineno-3-86" href="#__codelineno-3-86"></a>&gt;
+</span><span id="__span-3-87"><a id="__codelineno-3-87" name="__codelineno-3-87" href="#__codelineno-3-87"></a>&gt; **关键约束：**
+</span><span id="__span-3-88"><a id="__codelineno-3-88" name="__codelineno-3-88" href="#__codelineno-3-88"></a>&gt; - **每轮最多 {n} 个 `task` 调用**——系统强制执行，多余调用会被丢弃
+</span><span id="__span-3-89"><a id="__codelineno-3-89" name="__codelineno-3-89" href="#__codelineno-3-89"></a>&gt; - 只有在可以并行启动 2+ 个子 agent 时才使用 `task`
+</span><span id="__span-3-90"><a id="__codelineno-3-90" name="__codelineno-3-90" href="#__codelineno-3-90"></a>&gt; - 单个任务 = 子 agent 无价值 = 直接执行
+</span><span id="__span-3-91"><a id="__codelineno-3-91" name="__codelineno-3-91" href="#__codelineno-3-91"></a>&gt; - 超过 {n} 个子任务时，跨多轮使用每批 {n} 个的顺序批次
+</span><span id="__span-3-92"><a id="__codelineno-3-92" name="__codelineno-3-92" href="#__codelineno-3-92"></a>&gt; &lt;/subagent_system&gt;
+</span><span id="__span-3-93"><a id="__codelineno-3-93" name="__codelineno-3-93" href="#__codelineno-3-93"></a>&gt; ```
+</span><span id="__span-3-94"><a id="__codelineno-3-94" name="__codelineno-3-94" href="#__codelineno-3-94"></a>
+</span><span id="__span-3-95"><a id="__codelineno-3-95" name="__codelineno-3-95" href="#__codelineno-3-95"></a>---
+</span><span id="__span-3-96"><a id="__codelineno-3-96" name="__codelineno-3-96" href="#__codelineno-3-96"></a>
+</span><span id="__span-3-97"><a id="__codelineno-3-97" name="__codelineno-3-97" href="#__codelineno-3-97"></a>## 8.2 三步编排模型解析
+</span><span id="__span-3-98"><a id="__codelineno-3-98" name="__codelineno-3-98" href="#__codelineno-3-98"></a>
+</span><span id="__span-3-99"><a id="__codelineno-3-99" name="__codelineno-3-99" href="#__codelineno-3-99"></a>P-02 的首段定义了编排者（Orchestrator）的核心工作流：
 </span></code></pre></div>
 1. DECOMPOSE: Break complex tasks into parallel sub-tasks
 2. DELEGATE: Launch multiple subagents simultaneously using parallel <code>task</code> calls
 3. SYNTHESIZE: Collect and integrate results into a coherent answer
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>**DECOMPOSE → DELEGATE → SYNTHESIZE** 是一个明确的三阶段模型，而不是模糊的&quot;分配给子 Agent&quot;。
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>这个模型有意区分了两种不同的执行路径：
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>| 路径 | 适用情况 | 执行方式 |
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>|------|---------|---------|
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>| **编排路径** | 任务可拆分为 2+ 独立子任务 | DECOMPOSE → DELEGATE → SYNTHESIZE |
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>| **直接执行路径** | 任务不可分解 / 单步操作 | 直接调用工具 |
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>这个区分很重要——P-02 不是说&quot;所有任务都用子 Agent&quot;，而是明确了子 Agent 模式的适用条件：**可以并行分解的复杂任务**。
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>---
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>## 8.3 并发限制的后果驱动设计
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&gt; **中文附注**：
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>&gt;
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>&gt; 1. 分解：将复杂任务拆分为并行子任务
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>&gt; 2. 委派：使用并行的 `task` 调用同时启动多个子 agent
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>&gt; 3. 综合：收集并整合结果成为连贯答案
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>**DECOMPOSE → DELEGATE → SYNTHESIZE** 是一个明确的三阶段模型，而不是模糊的&quot;分配给子 Agent&quot;。
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>这个模型有意区分了两种不同的执行路径：
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>| 路径 | 适用情况 | 执行方式 |
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>|------|---------|---------|
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>| **编排路径** | 任务可拆分为 2+ 独立子任务 | DECOMPOSE → DELEGATE → SYNTHESIZE |
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>| **直接执行路径** | 任务不可分解 / 单步操作 | 直接调用工具 |
 </span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>
-</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>P-02 中最精心设计的部分是并发限制的描述方式：
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>这个区分很重要——P-02 不是说&quot;所有任务都用子 Agent&quot;，而是明确了子 Agent 模式的适用条件：**可以并行分解的复杂任务**。
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>---
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>## 8.3 并发限制的后果驱动设计
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>P-02 中最精心设计的部分是并发限制的描述方式：
 </span></code></pre></div>
 <strong>⛔ HARD CONCURRENCY LIMIT: MAXIMUM {n} <code>task</code> CALLS PER RESPONSE. THIS IS NOT OPTIONAL.</strong>
 - Each response, you may include <strong>at most {n}</strong> <code>task</code> tool calls. Any excess calls are <strong>silently discarded</strong> by the system — you will lose that work.
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>这里有三层设计强度递进：
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>**第一层：视觉强度**
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>- `⛔` 符号：硬性停止信号
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>- 全大写 `MAXIMUM`：强调上限
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>- `THIS IS NOT OPTIONAL`：预封堵&quot;可选项&quot;解读
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&gt; **中文附注**：
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>&gt;
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>&gt; **⛔ 硬性并发限制：每次回复最多 {n} 个 `task` 调用。这不是可选项。**
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>&gt; - 每次回复，你最多可以包含 **{n}** 个 `task` 工具调用。超出的调用会被系统**静默丢弃**——你会失去那些工作。
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>这里有三层设计强度递进：
 </span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>**第二层：后果描述**
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>- `silently discarded`（悄悄丢弃）：不是报错，不是拒绝，而是无声地消失
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>- `you will lose that work`：强调损失是你的损失，不是系统的问题
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>**第三层：行为指导**
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>不只告诉模型&quot;最多 {n} 次&quot;，还教它如何应对超过 {n} 的情况：数一数子任务总数，制定分批计划，这次只执行第一批。
-</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
-</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>`silently discarded` 是整段中最有技巧的词语选择：对于模型来说，&quot;会报错&quot;是可观测的信号（失败会有反馈），而&quot;悄悄消失&quot;是不可观测的陷阱（失败没有任何提示）。这个后果之所以有威慑力，正是因为它是静默的。
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>**第一层：视觉强度**
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>- `⛔` 符号：硬性停止信号
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>- 全大写 `MAXIMUM`：强调上限
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>- `THIS IS NOT OPTIONAL`：预封堵&quot;可选项&quot;解读
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>**第二层：后果描述**
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>- `silently discarded`（悄悄丢弃）：不是报错，不是拒绝，而是无声地消失
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>- `you will lose that work`：强调损失是你的损失，不是系统的问题
 </span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>
-</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>---
-</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>
-</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>## 8.4 计数-批次-执行工作流
-</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>
-</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>P-02 的 CRITICAL WORKFLOW 部分是一个**五步强制检查清单**：
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>**第三层：行为指导**
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>不只告诉模型&quot;最多 {n} 次&quot;，还教它如何应对超过 {n} 的情况：数一数子任务总数，制定分批计划，这次只执行第一批。
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>`silently discarded` 是整段中最有技巧的词语选择：对于模型来说，&quot;会报错&quot;是可观测的信号（失败会有反馈），而&quot;悄悄消失&quot;是不可观测的陷阱（失败没有任何提示）。这个后果之所以有威慑力，正是因为它是静默的。
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>---
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>## 8.4 计数-批次-执行工作流
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>P-02 的 CRITICAL WORKFLOW 部分是一个**五步强制检查清单**：
 </span></code></pre></div>
 1. COUNT: In your thinking, list all sub-tasks and count them explicitly: "I have N sub-tasks"
 2. PLAN BATCHES: If N &gt; {n}, explicitly plan which sub-tasks go in which batch
 3. EXECUTE: Launch ONLY the current batch (max {n} <code>task</code> calls)
 4. REPEAT: After results return, launch the next batch
 5. SYNTHESIZE: After ALL batches are done, synthesize all results
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>步骤 1（COUNT）的设计有一个微妙的细节：`&quot;count them explicitly&quot;`。这要求模型在 thinking 中写出具体数字（&quot;I have N sub-tasks&quot;），而不只是模糊地感知&quot;有很多任务&quot;。显式数字是一个强迫模型做算术的机制——模型在写下&quot;I have 6 sub-tasks&quot;之后，会更容易意识到 6 &gt; 3（假设 n=3），进而执行批次计划。
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>步骤 2（PLAN BATCHES）要求明确说明哪些子任务在第一批、哪些在第二批，这防止了一种常见的失误：计划了 6 个任务，然后在执行时&quot;顺手&quot;全部发出去。
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>`&quot;Example thinking pattern&quot;` 提供了一个具体的内心独白示例：
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&gt; **中文附注**：
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>&gt;
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>&gt; 1. 计数：在思考中列出所有子任务并明确计数：&quot;我有 N 个子任务&quot;
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>&gt; 2. 规划批次：如果 N &gt; {n}，明确规划哪些子任务在哪批
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>&gt; 3. 执行：仅启动当前批次（最多 {n} 个 `task` 调用）
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>&gt; 4. 重复：结果返回后，启动下一批
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>&gt; 5. 综合：所有批次完成后，综合所有结果
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>步骤 1（COUNT）的设计有一个微妙的细节：`&quot;count them explicitly&quot;`。这要求模型在 thinking 中写出具体数字（&quot;I have N sub-tasks&quot;），而不只是模糊地感知&quot;有很多任务&quot;。显式数字是一个强迫模型做算术的机制——模型在写下&quot;I have 6 sub-tasks&quot;之后，会更容易意识到 6 &gt; 3（假设 n=3），进而执行批次计划。
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>步骤 2（PLAN BATCHES）要求明确说明哪些子任务在第一批、哪些在第二批，这防止了一种常见的失误：计划了 6 个任务，然后在执行时&quot;顺手&quot;全部发出去。
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>`&quot;Example thinking pattern&quot;` 提供了一个具体的内心独白示例：
 </span></code></pre></div>
 "I identified 6 sub-tasks. Since the limit is {n} per turn, I will launch the first {n} now, and the rest in the next turn."
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>这个示例的价值是：它展示了计数和批次计划**应该在哪里发生**（in thinking）以及**应该用什么语言表达**。
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&gt; **中文附注**：「我识别出 6 个子任务。由于每轮限制为 {n}，我将先启动前 {n} 个，其余在下一轮处理。」
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>---
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>这个示例的价值是：它展示了计数和批次计划**应该在哪里发生**（in thinking）以及**应该用什么语言表达**。
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>## 8.5 三个具体示例的设计逻辑
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>---
 </span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>P-02 中有三个完整的编排示例：
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>## 8.5 三个具体示例的设计逻辑
 </span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>**示例 1**（腾讯股价，3 个子任务 → 1 批次）：展示最基本的并行执行模式。
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>P-02 中有三个完整的编排示例：
 </span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
-</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>**示例 2**（5 个云服务商对比，5 个子任务 → 多批次）：展示批次切换。注意选用了 5 个子任务，恰好比默认的 n=3 多了两个，强迫示例展示分批逻辑。
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>**示例 1**（腾讯股价，3 个子任务 → 1 批次）：展示最基本的并行执行模式。
 </span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>
-</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>**示例 3**（重构认证系统，探索 + 实施 + 审查 → 3 并行）：展示工程任务的分解方式，三个维度（分析现状 / 研究最佳实践 / 审查测试）各自独立，符合并行的前提。
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>**示例 2**（5 个云服务商对比，5 个子任务 → 多批次）：展示批次切换。注意选用了 5 个子任务，恰好比默认的 n=3 多了两个，强迫示例展示分批逻辑。
 </span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>
-</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>三个示例覆盖了三种常见场景：研究型任务、比较型任务、工程型任务。选题的多样性使示例具备了迁移参考价值，而不只是一个特例演示。
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>**示例 3**（重构认证系统，探索 + 实施 + 审查 → 3 并行）：展示工程任务的分解方式，三个维度（分析现状 / 研究最佳实践 / 审查测试）各自独立，符合并行的前提。
 </span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>
-</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>---
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>三个示例覆盖了三种常见场景：研究型任务、比较型任务、工程型任务。选题的多样性使示例具备了迁移参考价值，而不只是一个特例演示。
 </span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>
-</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>## 8.6 P-17：通用子 Agent 系统 Prompt 原文
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>---
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>## 8.6 P-17：通用子 Agent 系统 Prompt 原文
 </span></code></pre></div>
 You are a general-purpose subagent working on a delegated task. Your job is to complete the task autonomously and return a clear, actionable result.</p>
 <p><guidelines>
@@ -1627,20 +1742,55 @@ You have access to the same sandbox environment as the parent agent:
 - Treat <code>/mnt/user-data/workspace</code> as the default working directory for coding and file IO
 - Prefer relative paths from the workspace, such as <code>hello.txt</code>, <code>../uploads/input.csv</code>, and <code>../outputs/result.md</code>, when writing scripts or shell commands
 </working_directory>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>### P-17 的关键设计：`Do NOT ask for clarification`
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>通用子 Agent 的系统 Prompt 与主 Agent（P-01）有一个根本性的差异：
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>- **主 Agent（P-01）**：有完整的 `&lt;clarification_system&gt;`，主动识别澄清场景，遇到不清楚的情况必须先问
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>- **子 Agent（P-17）**：明确禁止澄清，`Do NOT ask for clarification - work with the information provided`
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>这个设计反映了两种 Agent 在架构中的不同角色：
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>主 Agent 是**用户接口**——它直接与用户对话，有义务确保任务被正确理解。子 Agent 是**执行单元**——它接受的是已经由主 Agent 处理过的、相对明确的任务描述。如果子 Agent 也开始向用户提问，将破坏并行执行的假设（所有子 Agent 同时启动，无法等待澄清），并在用户端制造混乱（用户可能同时收到来自多个子 Agent 的问题）。
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>`disallowed_tools=[&quot;task&quot;, &quot;ask_clarification&quot;, &quot;present_files&quot;]` 从工具绑定层面强制了这一约束：子 Agent 根本没有 `ask_clarification` 工具可用。
-</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>
-</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>### 输出格式的结构化要求
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>&gt; **中文附注**：
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>&gt;
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>&gt; 你是一个通用子 agent，正在处理一个委派的任务。你的工作是自主完成任务并返回清晰、可操作的结果。
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>&gt;
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>&gt; `&lt;guidelines&gt;`
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>&gt; - 专注于高效完成委派任务
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>&gt; - 根据需要使用可用工具来完成目标
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>&gt; - 逐步思考但果断行动
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>&gt; - 如果遇到问题，在回复中清楚地解释
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>&gt; - 返回你完成内容的简洁摘要
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>&gt; - **不得**要求澄清——使用提供的信息工作
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>&gt; `&lt;/guidelines&gt;`
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>&gt;
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>&gt; `&lt;file_editing_workflow&gt;`
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>&gt; 修改现有文件时，优先使用 `str_replace` 而非 `write_file`——只发送差异，避免重新发送整个文件。从头编写长篇新内容时，分段写入：第一次 `write_file` 调用创建文件，然后使用 `write_file` 加 `append=True` 逐节扩展。这使每次工具调用保持小型，避免超大单次写入的流中断超时。
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>&gt; `&lt;/file_editing_workflow&gt;`
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>&gt;
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>&gt; `&lt;output_format&gt;`
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>&gt; 完成任务时，提供：
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>&gt; 1. 完成内容的简要摘要
+</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>&gt; 2. 关键发现或结果
+</span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>&gt; 3. 创建的任何相关文件路径、数据或工件
+</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>&gt; 4. 遇到的问题（如有）
+</span><span id="__span-8-24"><a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>&gt; 5. 引用：对外部来源使用 `[citation:标题](URL)` 格式
+</span><span id="__span-8-25"><a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>&gt; `&lt;/output_format&gt;`
+</span><span id="__span-8-26"><a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>&gt;
+</span><span id="__span-8-27"><a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>&gt; `&lt;working_directory&gt;`
+</span><span id="__span-8-28"><a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>&gt; 与父 agent 相同的沙箱环境：
+</span><span id="__span-8-29"><a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>&gt; - 用户上传：`/mnt/user-data/uploads`
+</span><span id="__span-8-30"><a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a>&gt; - 用户工作区：`/mnt/user-data/workspace`
+</span><span id="__span-8-31"><a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a>&gt; - 输出文件：`/mnt/user-data/outputs`
+</span><span id="__span-8-32"><a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a>&gt; - 将 `/mnt/user-data/workspace` 视为默认工作目录
+</span><span id="__span-8-33"><a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a>&gt; - 优先使用工作区相对路径（如 `hello.txt`、`../uploads/input.csv`、`../outputs/result.md`）
+</span><span id="__span-8-34"><a id="__codelineno-8-34" name="__codelineno-8-34" href="#__codelineno-8-34"></a>&gt; `&lt;/working_directory&gt;`
+</span><span id="__span-8-35"><a id="__codelineno-8-35" name="__codelineno-8-35" href="#__codelineno-8-35"></a>
+</span><span id="__span-8-36"><a id="__codelineno-8-36" name="__codelineno-8-36" href="#__codelineno-8-36"></a>### P-17 的关键设计：`Do NOT ask for clarification`
+</span><span id="__span-8-37"><a id="__codelineno-8-37" name="__codelineno-8-37" href="#__codelineno-8-37"></a>
+</span><span id="__span-8-38"><a id="__codelineno-8-38" name="__codelineno-8-38" href="#__codelineno-8-38"></a>通用子 Agent 的系统 Prompt 与主 Agent（P-01）有一个根本性的差异：
+</span><span id="__span-8-39"><a id="__codelineno-8-39" name="__codelineno-8-39" href="#__codelineno-8-39"></a>
+</span><span id="__span-8-40"><a id="__codelineno-8-40" name="__codelineno-8-40" href="#__codelineno-8-40"></a>- **主 Agent（P-01）**：有完整的 `&lt;clarification_system&gt;`，主动识别澄清场景，遇到不清楚的情况必须先问
+</span><span id="__span-8-41"><a id="__codelineno-8-41" name="__codelineno-8-41" href="#__codelineno-8-41"></a>- **子 Agent（P-17）**：明确禁止澄清，`Do NOT ask for clarification - work with the information provided`
+</span><span id="__span-8-42"><a id="__codelineno-8-42" name="__codelineno-8-42" href="#__codelineno-8-42"></a>
+</span><span id="__span-8-43"><a id="__codelineno-8-43" name="__codelineno-8-43" href="#__codelineno-8-43"></a>这个设计反映了两种 Agent 在架构中的不同角色：
+</span><span id="__span-8-44"><a id="__codelineno-8-44" name="__codelineno-8-44" href="#__codelineno-8-44"></a>
+</span><span id="__span-8-45"><a id="__codelineno-8-45" name="__codelineno-8-45" href="#__codelineno-8-45"></a>主 Agent 是**用户接口**——它直接与用户对话，有义务确保任务被正确理解。子 Agent 是**执行单元**——它接受的是已经由主 Agent 处理过的、相对明确的任务描述。如果子 Agent 也开始向用户提问，将破坏并行执行的假设（所有子 Agent 同时启动，无法等待澄清），并在用户端制造混乱（用户可能同时收到来自多个子 Agent 的问题）。
+</span><span id="__span-8-46"><a id="__codelineno-8-46" name="__codelineno-8-46" href="#__codelineno-8-46"></a>
+</span><span id="__span-8-47"><a id="__codelineno-8-47" name="__codelineno-8-47" href="#__codelineno-8-47"></a>`disallowed_tools=[&quot;task&quot;, &quot;ask_clarification&quot;, &quot;present_files&quot;]` 从工具绑定层面强制了这一约束：子 Agent 根本没有 `ask_clarification` 工具可用。
+</span><span id="__span-8-48"><a id="__codelineno-8-48" name="__codelineno-8-48" href="#__codelineno-8-48"></a>
+</span><span id="__span-8-49"><a id="__codelineno-8-49" name="__codelineno-8-49" href="#__codelineno-8-49"></a>### 输出格式的结构化要求
 </span></code></pre></div>
 <output_format>
 When you complete the task, provide:
@@ -1650,11 +1800,22 @@ When you complete the task, provide:
 4. Issues encountered (if any)
 5. Citations: Use <code>[citation:Title](URL)</code> format for external sources
 </output_format>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>子 Agent 的输出会被主 Agent 读取并综合。结构化的输出格式保证了主 Agent 在综合阶段能够高效提取关键信息（摘要 / 发现 / 文件路径 / 问题 / 引用），而不是解析一段自由格式的文本。
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>---
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>## 8.7 P-18：通用子 Agent 描述原文
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>&gt; **中文附注**：
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>&gt;
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>&gt; `&lt;output_format&gt;`
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>&gt; 完成任务时，提供：
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>&gt; 1. 完成内容的简要摘要
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>&gt; 2. 关键发现或结果
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>&gt; 3. 创建的任何相关文件路径、数据或工件
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>&gt; 4. 遇到的问题（如有）
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>&gt; 5. 引用：对外部来源使用 `[citation:标题](URL)` 格式
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>&gt; `&lt;/output_format&gt;`
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>子 Agent 的输出会被主 Agent 读取并综合。结构化的输出格式保证了主 Agent 在综合阶段能够高效提取关键信息（摘要 / 发现 / 文件路径 / 问题 / 引用），而不是解析一段自由格式的文本。
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>---
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>## 8.7 P-18：通用子 Agent 描述原文
 </span></code></pre></div>
 A capable agent for complex, multi-step tasks that require both exploration and action.</p>
 <p>Use this subagent when:
@@ -1663,13 +1824,25 @@ A capable agent for complex, multi-step tasks that require both exploration and 
 - Multiple dependent steps must be executed
 - The task would benefit from isolated context management</p>
 <p>Do NOT use for simple, single-step operations.
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>P-18 是子 Agent 的**对外描述**，它出现在主 Agent 的 `&lt;subagent_system&gt;` 中的 `{available_subagents}` 部分，供主 Agent 在决定使用哪种子 Agent 时参考。
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>这里的&quot;When to use / When NOT to use&quot;模式（原则五）再次出现：不只说 general-purpose 能做什么，还明确了不应该用它的场景（&quot;simple, single-step operations&quot;）。
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>---
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>## 8.8 P-19：Bash 子 Agent 系统 Prompt 原文
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>&gt; **中文附注**：
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>&gt;
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>&gt; 适用于同时需要探索和行动的复杂多步任务的能力 agent。
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>&gt;
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>&gt; 在以下情况使用此子 agent：
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>&gt; - 任务同时需要探索和修改
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>&gt; - 需要复杂推理来解释结果
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>&gt; - 必须执行多个依赖步骤
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>&gt; - 任务将受益于隔离的上下文管理
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>&gt;
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>&gt; 不要用于简单的单步操作。
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>P-18 是子 Agent 的**对外描述**，它出现在主 Agent 的 `&lt;subagent_system&gt;` 中的 `{available_subagents}` 部分，供主 Agent 在决定使用哪种子 Agent 时参考。
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>这里的&quot;When to use / When NOT to use&quot;模式（原则五）再次出现：不只说 general-purpose 能做什么，还明确了不应该用它的场景（&quot;simple, single-step operations&quot;）。
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>---
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>
+</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>## 8.8 P-19：Bash 子 Agent 系统 Prompt 原文
 </span></code></pre></div>
 You are a bash command execution specialist. Execute the requested commands carefully and report results clearly.</p>
 <p><guidelines>
@@ -1697,23 +1870,54 @@ You have access to the sandbox environment:
 - Treat <code>/mnt/user-data/workspace</code> as the default working directory for file IO
 - Prefer relative paths from the workspace, such as <code>hello.txt</code>, <code>../uploads/input.csv</code>, and <code>../outputs/result.md</code>, when composing commands or helper scripts
 </working_directory>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>### P-19 与 P-17 的专业化差异
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>对比 P-17（通用子 Agent）和 P-19（Bash 子 Agent），可以看到专业化的体现：
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>| 维度 | P-17（通用）| P-19（Bash）|
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>|------|-----------|------------|
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>| **身份声明** | general-purpose subagent | bash command execution **specialist** |
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>| **执行策略** | Think step by step | 顺序 vs 并行的选择规则 |
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>| **输出要求** | 5 项综合输出 | 4 项命令级输出（聚焦命令结果）|
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>| **安全意识** | 通用 | 明确提醒破坏性操作 `rm, overwrite` |
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>| **工具集** | 继承全部父 Agent 工具 | 限定为 `[&quot;bash&quot;, &quot;ls&quot;, &quot;read_file&quot;, &quot;write_file&quot;, &quot;str_replace&quot;]` |
-</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
-</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>`&quot;Be cautious with destructive operations (rm, overwrite, etc.)&quot;` 是安全意识注入——这条规则在通用子 Agent 中不存在，因为 Bash 子 Agent 的工具集中有 `bash`（可以执行任意命令），破坏性操作风险更高，需要专门提醒。
-</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>
-</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>---
-</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>
-</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>## 8.9 P-20：Bash 子 Agent 描述原文
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&gt; **中文附注**：
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>&gt;
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>&gt; 你是一个 bash 命令执行专家。仔细执行请求的命令并清晰地报告结果。
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>&gt;
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>&gt; `&lt;guidelines&gt;`
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>&gt; - 当命令相互依赖时，逐个执行
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>&gt; - 命令独立时使用并行执行
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>&gt; - 相关时报告 stdout 和 stderr
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>&gt; - 优雅地处理错误并解释出错原因
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>&gt; - 对默认工作区布局下的文件使用相对路径
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>&gt; - 仅当任务引用工作区布局之外的挂载路径时使用绝对路径
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>&gt; - 对破坏性操作（rm、覆盖等）要谨慎
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>&gt; `&lt;/guidelines&gt;`
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>&gt;
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>&gt; `&lt;output_format&gt;`
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>&gt; 对每个命令或命令组：
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>&gt; 1. 执行了什么
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>&gt; 2. 结果（成功/失败）
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>&gt; 3. 相关输出（如果冗长则摘要）
+</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a>&gt; 4. 任何错误或警告
+</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a>&gt; `&lt;/output_format&gt;`
+</span><span id="__span-11-22"><a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a>&gt;
+</span><span id="__span-11-23"><a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a>&gt; `&lt;working_directory&gt;`
+</span><span id="__span-11-24"><a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a>&gt; 你可以访问沙箱环境：
+</span><span id="__span-11-25"><a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a>&gt; - 用户上传：`/mnt/user-data/uploads`
+</span><span id="__span-11-26"><a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a>&gt; - 用户工作区：`/mnt/user-data/workspace`
+</span><span id="__span-11-27"><a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a>&gt; - 输出文件：`/mnt/user-data/outputs`
+</span><span id="__span-11-28"><a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a>&gt; - 将 `/mnt/user-data/workspace` 视为默认工作目录
+</span><span id="__span-11-29"><a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a>&gt; - 优先使用工作区相对路径（如 `hello.txt`、`../uploads/input.csv`、`../outputs/result.md`）
+</span><span id="__span-11-30"><a id="__codelineno-11-30" name="__codelineno-11-30" href="#__codelineno-11-30"></a>&gt; `&lt;/working_directory&gt;`
+</span><span id="__span-11-31"><a id="__codelineno-11-31" name="__codelineno-11-31" href="#__codelineno-11-31"></a>
+</span><span id="__span-11-32"><a id="__codelineno-11-32" name="__codelineno-11-32" href="#__codelineno-11-32"></a>### P-19 与 P-17 的专业化差异
+</span><span id="__span-11-33"><a id="__codelineno-11-33" name="__codelineno-11-33" href="#__codelineno-11-33"></a>
+</span><span id="__span-11-34"><a id="__codelineno-11-34" name="__codelineno-11-34" href="#__codelineno-11-34"></a>对比 P-17（通用子 Agent）和 P-19（Bash 子 Agent），可以看到专业化的体现：
+</span><span id="__span-11-35"><a id="__codelineno-11-35" name="__codelineno-11-35" href="#__codelineno-11-35"></a>
+</span><span id="__span-11-36"><a id="__codelineno-11-36" name="__codelineno-11-36" href="#__codelineno-11-36"></a>| 维度 | P-17（通用）| P-19（Bash）|
+</span><span id="__span-11-37"><a id="__codelineno-11-37" name="__codelineno-11-37" href="#__codelineno-11-37"></a>|------|-----------|------------|
+</span><span id="__span-11-38"><a id="__codelineno-11-38" name="__codelineno-11-38" href="#__codelineno-11-38"></a>| **身份声明** | general-purpose subagent | bash command execution **specialist** |
+</span><span id="__span-11-39"><a id="__codelineno-11-39" name="__codelineno-11-39" href="#__codelineno-11-39"></a>| **执行策略** | Think step by step | 顺序 vs 并行的选择规则 |
+</span><span id="__span-11-40"><a id="__codelineno-11-40" name="__codelineno-11-40" href="#__codelineno-11-40"></a>| **输出要求** | 5 项综合输出 | 4 项命令级输出（聚焦命令结果）|
+</span><span id="__span-11-41"><a id="__codelineno-11-41" name="__codelineno-11-41" href="#__codelineno-11-41"></a>| **安全意识** | 通用 | 明确提醒破坏性操作 `rm, overwrite` |
+</span><span id="__span-11-42"><a id="__codelineno-11-42" name="__codelineno-11-42" href="#__codelineno-11-42"></a>| **工具集** | 继承全部父 Agent 工具 | 限定为 `[&quot;bash&quot;, &quot;ls&quot;, &quot;read_file&quot;, &quot;write_file&quot;, &quot;str_replace&quot;]` |
+</span><span id="__span-11-43"><a id="__codelineno-11-43" name="__codelineno-11-43" href="#__codelineno-11-43"></a>
+</span><span id="__span-11-44"><a id="__codelineno-11-44" name="__codelineno-11-44" href="#__codelineno-11-44"></a>`&quot;Be cautious with destructive operations (rm, overwrite, etc.)&quot;` 是安全意识注入——这条规则在通用子 Agent 中不存在，因为 Bash 子 Agent 的工具集中有 `bash`（可以执行任意命令），破坏性操作风险更高，需要专门提醒。
+</span><span id="__span-11-45"><a id="__codelineno-11-45" name="__codelineno-11-45" href="#__codelineno-11-45"></a>
+</span><span id="__span-11-46"><a id="__codelineno-11-46" name="__codelineno-11-46" href="#__codelineno-11-46"></a>---
+</span><span id="__span-11-47"><a id="__codelineno-11-47" name="__codelineno-11-47" href="#__codelineno-11-47"></a>
+</span><span id="__span-11-48"><a id="__codelineno-11-48" name="__codelineno-11-48" href="#__codelineno-11-48"></a>## 8.9 P-20：Bash 子 Agent 描述原文
 </span></code></pre></div>
 Command execution specialist for running bash commands in a separate context.</p>
 <p>Use this subagent when:
@@ -1722,14 +1926,28 @@ Command execution specialist for running bash commands in a separate context.</p
 - Command output is verbose and would clutter main context
 - Build, test, or deployment operations</p>
 <p>Do NOT use for simple single commands - use bash tool directly instead.
-<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>P-20 中最重要的一条：
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>&gt; **中文附注**：
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>&gt;
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>&gt; 在独立上下文中运行 bash 命令的命令执行专家。
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>&gt;
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>&gt; 在以下情况使用此子 agent：
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>&gt; - 需要运行一系列相关 bash 命令
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>&gt; - 终端操作，如 git、npm、docker 等
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>&gt; - 命令输出冗长且会使主上下文混乱
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>&gt; - 构建、测试或部署操作
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>&gt;
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>&gt; 不要用于简单的单个命令——直接使用 bash 工具。
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>P-20 中最重要的一条：
 </span></code></pre></div>
 Do NOT use for simple single commands - use bash tool directly instead.
-<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>这条规则防止了 Bash 子 Agent 的最常见误用：对于一条 `git status` 或 `ls` 命令也启动子 Agent，白白增加了异步等待的开销。&quot;use bash tool directly instead&quot;提供了替代方案，降低了决策成本。
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>&gt; **中文附注**：不要用于简单的单个命令——直接使用 bash 工具。
 </span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>---
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>这条规则防止了 Bash 子 Agent 的最常见误用：对于一条 `git status` 或 `ls` 命令也启动子 Agent，白白增加了异步等待的开销。&quot;use bash tool directly instead&quot;提供了替代方案，降低了决策成本。
 </span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>## 8.10 P-22：`task` 工具描述原文
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>---
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>## 8.10 P-22：`task` 工具描述原文
 </span></code></pre></div>
 Delegate a task to a specialized subagent that runs in its own context.</p>
 <p>Subagents help you:
@@ -1755,23 +1973,50 @@ is provided, the error message will list all available types.</p>
 <p>When NOT to use this tool:
 - Simple, single-step operations (use tools directly)
 - Tasks requiring user interaction or clarification
-<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>### P-22 的&quot;上下文隔离&quot;价值点
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>P-22 中有一个在其他地方没有突出的价值点：
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>&gt; **中文附注**：
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>&gt;
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>&gt; 将任务委派给在其自己上下文中运行的专门子 agent。
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>&gt;
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>&gt; 子 agent 帮助你：
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>&gt; - 通过将探索和实现分开来保护上下文
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>&gt; - 自主处理复杂的多步任务
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>&gt; - 在隔离的上下文中执行命令或操作
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>&gt;
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>&gt; 内置子 agent 类型：
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>&gt; - **general-purpose**：适用于同时需要探索和行动的复杂多步任务的能力 agent。当任务需要复杂推理、多个依赖步骤，或将受益于隔离上下文时使用。
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>&gt; - **bash**：bash 命令执行专家。仅在明确允许宿主 bash 或使用隔离 shell 沙箱（如 `AioSandboxProvider`）时可用。
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>&gt;
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>&gt; 自定义子 agent 类型可在 `config.yaml` 的 `subagents.custom_agents` 下定义。每种自定义类型可有自己的系统 prompt、工具、技能、模型和超时配置。如果提供了未知的 `subagent_type`，错误消息会列出所有可用类型。
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>&gt;
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>&gt; 何时使用此工具：
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>&gt; - 需要多步骤或多工具的复杂任务
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>&gt; - 会产生冗长输出的任务
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>&gt; - 希望将上下文与主对话隔离时
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a>&gt; - 并行研究或探索任务
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>&gt;
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>&gt; 何时不使用此工具：
+</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a>&gt; - 简单的单步操作（直接使用工具）
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a>&gt; - 需要用户交互或澄清的任务
+</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a>
+</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a>### P-22 的&quot;上下文隔离&quot;价值点
+</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a>
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>P-22 中有一个在其他地方没有突出的价值点：
 </span></code></pre></div>
 Subagents help you:
 - Preserve context by keeping exploration and implementation separate
-<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>**上下文隔离**是子 Agent 的第三个（也是最微妙的）价值，除了并行加速和减少主上下文的输出噪音之外。
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>&gt; **中文附注**：子 agent 帮助你：通过将探索和实现分开来保护上下文。
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>子 Agent 在独立的对话历史中运行（`checkpointer=False` 的独立图），它的探索过程——读了哪些文件、尝试了哪些方案、遇到了哪些错误——不会污染主 Agent 的对话历史。这让主 Agent 在综合阶段时看到的是干净的结果，而不是一长串中间状态。
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>**上下文隔离**是子 Agent 的第三个（也是最微妙的）价值，除了并行加速和减少主上下文的输出噪音之外。
 </span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>
-</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>`&quot;When you want to isolate context from the main conversation&quot;` 是这个价值点的直接表达。
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>子 Agent 在独立的对话历史中运行（`checkpointer=False` 的独立图），它的探索过程——读了哪些文件、尝试了哪些方案、遇到了哪些错误——不会污染主 Agent 的对话历史。这让主 Agent 在综合阶段时看到的是干净的结果，而不是一长串中间状态。
 </span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
-</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>---
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>`&quot;When you want to isolate context from the main conversation&quot;` 是这个价值点的直接表达。
 </span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>
-</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>## 8.11 六个 Prompt 的协同关系
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>---
 </span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>
-</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>用一张图来呈现这六个 Prompt 在运行时的协作方式：
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>## 8.11 六个 Prompt 的协同关系
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>用一张图来呈现这六个 Prompt 在运行时的协作方式：
 </span></code></pre></div>
 用户: "分析 5 个竞品"
          ↓

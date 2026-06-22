@@ -1504,92 +1504,126 @@
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>- Your response must contain the actual answer, not just a reference to what you thought about
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>&lt;/thinking_style&gt;
 </span></code></pre></div>
-<p>当 <code>subagent_enabled=True</code> 时，<code>{subagent_thinking}</code> 被替换为：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>- **DECOMPOSITION CHECK: Can this task be broken into 2+ parallel sub-tasks? If YES, COUNT them. If count &gt; {n}, you MUST plan batches of ≤{n} and only launch the FIRST batch now. NEVER launch more than {n} `task` calls in one response.**
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&lt;thinking_style&gt;
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>- 在采取行动之前，简洁而有策略地思考用户的请求
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>- 分解任务：什么是清晰的？什么是模糊的？什么是缺失的？
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>- **优先级检查：如果有任何不清晰、缺失或多义之处，你必须首先要求澄清——不得直接开始工作**
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>{subagent_thinking}- 不要在思考过程中写出完整的最终答案或报告，只需列出提纲
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>- 关键：思考之后，你必须向用户提供实际回复。思考是为了规划，回复是为了交付。
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>- 你的回复必须包含实际答案，而非仅仅引用你所思考的内容
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>&lt;/thinking_style&gt;
 </span></code></pre></div>
+</blockquote>
+<p>当 <code>subagent_enabled=True</code> 时，<code>{subagent_thinking}</code> 被替换为：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>- **DECOMPOSITION CHECK: Can this task be broken into 2+ parallel sub-tasks? If YES, COUNT them. If count &gt; {n}, you MUST plan batches of ≤{n} and only launch the FIRST batch now. NEVER launch more than {n} `task` calls in one response.**
+</span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：<strong>分解检查：此任务能否拆分为 2 个以上并行子任务？如果是，计数。若数量 &gt; {n}，你必须规划批次（每批 ≤{n} 个），且当前只启动第一批。绝不在一次回复中发起超过 {n} 个 <code>task</code> 调用。</strong></p>
+</blockquote>
 <p>（<code>{n}</code> 是最大并发数，默认为 3）</p>
 <hr />
 <h2 id="52-thinking_style">5.2 <code>&lt;thinking_style&gt;</code> 逐行解析<a class="headerlink" href="#52-thinking_style" title="Permanent link">&para;</a></h2>
 <h3 id="before-taking-action">"BEFORE taking action"<a class="headerlink" href="#before-taking-action" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>- Think concisely and strategically about the user&#39;s request BEFORE taking action
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>- Think concisely and strategically about the user&#39;s request BEFORE taking action
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：在采取行动之前，简洁而有策略地思考用户的请求</p>
+</blockquote>
 <p>这个 <code>BEFORE</code> 是整个段落的核心约束：<strong>思考必须发生在行动之前</strong>。这不是一个提倡性的建议，而是明确的时序规定。</p>
 <p>对于支持扩展思考（Extended Thinking/Thinking Mode）的模型（如 Claude Sonnet 3.7），<code>&lt;thinking&gt;</code> 是隐式的、由系统控制的。但对于不支持扩展思考的模型，这条规则要求模型在工具调用之前在文本输出中展示思考过程。</p>
 <h3 id="_2">三分法分解框架<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>- Break down the task: What is clear? What is ambiguous? What is missing?
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>- Break down the task: What is clear? What is ambiguous? What is missing?
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：分解任务：什么是清晰的？什么是模糊的？什么是缺失的？</p>
+</blockquote>
 <p>这是一个三问框架：清楚的 / 模糊的 / 缺失的。把抽象的"理解用户意图"具体化为三个可独立检验的问题。</p>
 <p>这个框架的设计价值在于：它创造了一个清单（checklist）模式，而不是让模型自由判断"我是否理解了这个请求"。自由判断容易导致乐观偏差——模型倾向于认为自己已经理解了（confirmation bias），三分法强制了一个更系统的评估。</p>
 <h3 id="priority-check">优先级检查（PRIORITY CHECK）<a class="headerlink" href="#priority-check" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>- **PRIORITY CHECK: If anything is unclear, missing, or has multiple interpretations, you MUST ask for clarification FIRST - do NOT proceed with work**
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>- **PRIORITY CHECK: If anything is unclear, missing, or has multiple interpretations, you MUST ask for clarification FIRST - do NOT proceed with work**
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：<strong>优先级检查：如果有任何不清晰、缺失或多义之处，你必须首先要求澄清——不得直接开始工作</strong></p>
+</blockquote>
 <p>这行以 <code>**PRIORITY CHECK:**</code> 开头，在视觉上与其他 bullet point 明显区分。这是层次化指令密度（原则七）的体现——在一个 bullet list 中，用粗体 + 特殊前缀来标记最高优先级的规则。</p>
 <p><code>"do NOT proceed with work"</code> 是具体的行为禁止，而不是模糊的"考虑是否需要澄清"。这个明确的行为指向让规则可执行。</p>
 <h3 id="_3">思考不是草稿<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>- Never write down your full final answer or report in thinking process, but only outline
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>- Never write down your full final answer or report in thinking process, but only outline
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：不要在思考过程中写出完整的最终答案或报告，只需列出提纲</p>
+</blockquote>
 <p>这条规则解决了一个实际问题：如果允许模型在思考中写出完整答案，它会把"交付"提前完成，然后在最终响应中只给出一个"参考思考"的简短结论。这会让用户看到一个残缺的响应。</p>
 <p>规则要求思考只包含"outline"（提纲/框架），把完整答案留在响应中交付。</p>
 <h3 id="_4">防止"只有思考没有响应"<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>- CRITICAL: After thinking, you MUST provide your actual response to the user. Thinking is for planning, the response is for delivery.
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>- Your response must contain the actual answer, not just a reference to what you thought about
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>- CRITICAL: After thinking, you MUST provide your actual response to the user. Thinking is for planning, the response is for delivery.
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>- Your response must contain the actual answer, not just a reference to what you thought about
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<ul>
+<li><strong>关键</strong>：思考之后，你<strong>必须</strong>向用户提供实际回复。思考是为了规划，回复是为了交付。</li>
+<li>你的回复必须包含实际答案，而非仅仅引用你所思考的内容。</li>
+</ul>
+</blockquote>
 <p>这两条规则防止的是另一种问题：模型在思考中做完了所有工作，然后在响应中只写"我已经按照上面的思路分析了..."。用户看到的是一个元引用，而不是实际内容。</p>
 <p>"Thinking is for planning, the response is for delivery"是一个有效的语义锚点：用功能定义来区分两个阶段，比"你必须在响应中给出完整答案"更容易被模型内化。</p>
 <hr />
 <h2 id="53-clarification_system">5.3 <code>&lt;clarification_system&gt;</code> 段落原文<a class="headerlink" href="#53-clarification_system" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&lt;clarification_system&gt;
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>**WORKFLOW PRIORITY: CLARIFY → PLAN → ACT**
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>1. **FIRST**: Analyze the request in your thinking - identify what&#39;s unclear, missing, or ambiguous
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>2. **SECOND**: If clarification is needed, call `ask_clarification` tool IMMEDIATELY - do NOT start working
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>3. **THIRD**: Only after all clarifications are resolved, proceed with planning and execution
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>**CRITICAL RULE: Clarification ALWAYS comes BEFORE action. Never start working and clarify mid-execution.**
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>**MANDATORY Clarification Scenarios - You MUST call ask_clarification BEFORE starting work when:**
-</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
-</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>1. **Missing Information** (`missing_info`): Required details not provided
-</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>   - Example: User says &quot;create a web scraper&quot; but doesn&#39;t specify the target website
-</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>   - Example: &quot;Deploy the app&quot; without specifying environment
-</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>   - **REQUIRED ACTION**: Call ask_clarification to get the missing information
-</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>
-</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>2. **Ambiguous Requirements** (`ambiguous_requirement`): Multiple valid interpretations exist
-</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>   - Example: &quot;Optimize the code&quot; could mean performance, readability, or memory usage
-</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>   - Example: &quot;Make it better&quot; is unclear what aspect to improve
-</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>   - **REQUIRED ACTION**: Call ask_clarification to clarify the exact requirement
-</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>
-</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>3. **Approach Choices** (`approach_choice`): Several valid approaches exist
-</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>   - Example: &quot;Add authentication&quot; could use JWT, OAuth, session-based, or API keys
-</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>   - Example: &quot;Store data&quot; could use database, files, cache, etc.
-</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>   - **REQUIRED ACTION**: Call ask_clarification to let user choose the approach
-</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>
-</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>4. **Risky Operations** (`risk_confirmation`): Destructive actions need confirmation
-</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>   - Example: Deleting files, modifying production configs, database operations
-</span><span id="__span-7-28"><a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>   - Example: Overwriting existing code or data
-</span><span id="__span-7-29"><a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>   - **REQUIRED ACTION**: Call ask_clarification to get explicit confirmation
-</span><span id="__span-7-30"><a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a>
-</span><span id="__span-7-31"><a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a>5. **Suggestions** (`suggestion`): You have a recommendation but want approval
-</span><span id="__span-7-32"><a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a>   - Example: &quot;I recommend refactoring this code. Should I proceed?&quot;
-</span><span id="__span-7-33"><a id="__codelineno-7-33" name="__codelineno-7-33" href="#__codelineno-7-33"></a>   - **REQUIRED ACTION**: Call ask_clarification to get approval
-</span><span id="__span-7-34"><a id="__codelineno-7-34" name="__codelineno-7-34" href="#__codelineno-7-34"></a>
-</span><span id="__span-7-35"><a id="__codelineno-7-35" name="__codelineno-7-35" href="#__codelineno-7-35"></a>**STRICT ENFORCEMENT:**
-</span><span id="__span-7-36"><a id="__codelineno-7-36" name="__codelineno-7-36" href="#__codelineno-7-36"></a>- ❌ DO NOT start working and then ask for clarification mid-execution - clarify FIRST
-</span><span id="__span-7-37"><a id="__codelineno-7-37" name="__codelineno-7-37" href="#__codelineno-7-37"></a>- ❌ DO NOT skip clarification for &quot;efficiency&quot; - accuracy matters more than speed
-</span><span id="__span-7-38"><a id="__codelineno-7-38" name="__codelineno-7-38" href="#__codelineno-7-38"></a>- ❌ DO NOT make assumptions when information is missing - ALWAYS ask
-</span><span id="__span-7-39"><a id="__codelineno-7-39" name="__codelineno-7-39" href="#__codelineno-7-39"></a>- ❌ DO NOT proceed with guesses - STOP and call ask_clarification first
-</span><span id="__span-7-40"><a id="__codelineno-7-40" name="__codelineno-7-40" href="#__codelineno-7-40"></a>- ✅ Analyze the request in thinking → Identify unclear aspects → Ask BEFORE any action
-</span><span id="__span-7-41"><a id="__codelineno-7-41" name="__codelineno-7-41" href="#__codelineno-7-41"></a>- ✅ If you identify the need for clarification in your thinking, you MUST call the tool IMMEDIATELY
-</span><span id="__span-7-42"><a id="__codelineno-7-42" name="__codelineno-7-42" href="#__codelineno-7-42"></a>- ✅ After calling ask_clarification, execution will be interrupted automatically
-</span><span id="__span-7-43"><a id="__codelineno-7-43" name="__codelineno-7-43" href="#__codelineno-7-43"></a>- ✅ Wait for user response - do NOT continue with assumptions
-</span><span id="__span-7-44"><a id="__codelineno-7-44" name="__codelineno-7-44" href="#__codelineno-7-44"></a>
-</span><span id="__span-7-45"><a id="__codelineno-7-45" name="__codelineno-7-45" href="#__codelineno-7-45"></a>**How to Use:**
-</span><span id="__span-7-46"><a id="__codelineno-7-46" name="__codelineno-7-46" href="#__codelineno-7-46"></a>```python
-</span><span id="__span-7-47"><a id="__codelineno-7-47" name="__codelineno-7-47" href="#__codelineno-7-47"></a>ask_clarification(
-</span><span id="__span-7-48"><a id="__codelineno-7-48" name="__codelineno-7-48" href="#__codelineno-7-48"></a>    question=&quot;Your specific question here?&quot;,
-</span><span id="__span-7-49"><a id="__codelineno-7-49" name="__codelineno-7-49" href="#__codelineno-7-49"></a>    clarification_type=&quot;missing_info&quot;,  # or other type
-</span><span id="__span-7-50"><a id="__codelineno-7-50" name="__codelineno-7-50" href="#__codelineno-7-50"></a>    context=&quot;Why you need this information&quot;,  # optional but recommended
-</span><span id="__span-7-51"><a id="__codelineno-7-51" name="__codelineno-7-51" href="#__codelineno-7-51"></a>    options=[&quot;option1&quot;, &quot;option2&quot;]  # optional, for choices
-</span><span id="__span-7-52"><a id="__codelineno-7-52" name="__codelineno-7-52" href="#__codelineno-7-52"></a>)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>&lt;clarification_system&gt;
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>**WORKFLOW PRIORITY: CLARIFY → PLAN → ACT**
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>1. **FIRST**: Analyze the request in your thinking - identify what&#39;s unclear, missing, or ambiguous
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>2. **SECOND**: If clarification is needed, call `ask_clarification` tool IMMEDIATELY - do NOT start working
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>3. **THIRD**: Only after all clarifications are resolved, proceed with planning and execution
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>**CRITICAL RULE: Clarification ALWAYS comes BEFORE action. Never start working and clarify mid-execution.**
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>**MANDATORY Clarification Scenarios - You MUST call ask_clarification BEFORE starting work when:**
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>1. **Missing Information** (`missing_info`): Required details not provided
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>   - Example: User says &quot;create a web scraper&quot; but doesn&#39;t specify the target website
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>   - Example: &quot;Deploy the app&quot; without specifying environment
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>   - **REQUIRED ACTION**: Call ask_clarification to get the missing information
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>2. **Ambiguous Requirements** (`ambiguous_requirement`): Multiple valid interpretations exist
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>   - Example: &quot;Optimize the code&quot; could mean performance, readability, or memory usage
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>   - Example: &quot;Make it better&quot; is unclear what aspect to improve
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>   - **REQUIRED ACTION**: Call ask_clarification to clarify the exact requirement
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>
+</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>3. **Approach Choices** (`approach_choice`): Several valid approaches exist
+</span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>   - Example: &quot;Add authentication&quot; could use JWT, OAuth, session-based, or API keys
+</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>   - Example: &quot;Store data&quot; could use database, files, cache, etc.
+</span><span id="__span-8-24"><a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>   - **REQUIRED ACTION**: Call ask_clarification to let user choose the approach
+</span><span id="__span-8-25"><a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>
+</span><span id="__span-8-26"><a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>4. **Risky Operations** (`risk_confirmation`): Destructive actions need confirmation
+</span><span id="__span-8-27"><a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>   - Example: Deleting files, modifying production configs, database operations
+</span><span id="__span-8-28"><a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>   - Example: Overwriting existing code or data
+</span><span id="__span-8-29"><a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>   - **REQUIRED ACTION**: Call ask_clarification to get explicit confirmation
+</span><span id="__span-8-30"><a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a>
+</span><span id="__span-8-31"><a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a>5. **Suggestions** (`suggestion`): You have a recommendation but want approval
+</span><span id="__span-8-32"><a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a>   - Example: &quot;I recommend refactoring this code. Should I proceed?&quot;
+</span><span id="__span-8-33"><a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a>   - **REQUIRED ACTION**: Call ask_clarification to get approval
+</span><span id="__span-8-34"><a id="__codelineno-8-34" name="__codelineno-8-34" href="#__codelineno-8-34"></a>
+</span><span id="__span-8-35"><a id="__codelineno-8-35" name="__codelineno-8-35" href="#__codelineno-8-35"></a>**STRICT ENFORCEMENT:**
+</span><span id="__span-8-36"><a id="__codelineno-8-36" name="__codelineno-8-36" href="#__codelineno-8-36"></a>- ❌ DO NOT start working and then ask for clarification mid-execution - clarify FIRST
+</span><span id="__span-8-37"><a id="__codelineno-8-37" name="__codelineno-8-37" href="#__codelineno-8-37"></a>- ❌ DO NOT skip clarification for &quot;efficiency&quot; - accuracy matters more than speed
+</span><span id="__span-8-38"><a id="__codelineno-8-38" name="__codelineno-8-38" href="#__codelineno-8-38"></a>- ❌ DO NOT make assumptions when information is missing - ALWAYS ask
+</span><span id="__span-8-39"><a id="__codelineno-8-39" name="__codelineno-8-39" href="#__codelineno-8-39"></a>- ❌ DO NOT proceed with guesses - STOP and call ask_clarification first
+</span><span id="__span-8-40"><a id="__codelineno-8-40" name="__codelineno-8-40" href="#__codelineno-8-40"></a>- ✅ Analyze the request in thinking → Identify unclear aspects → Ask BEFORE any action
+</span><span id="__span-8-41"><a id="__codelineno-8-41" name="__codelineno-8-41" href="#__codelineno-8-41"></a>- ✅ If you identify the need for clarification in your thinking, you MUST call the tool IMMEDIATELY
+</span><span id="__span-8-42"><a id="__codelineno-8-42" name="__codelineno-8-42" href="#__codelineno-8-42"></a>- ✅ After calling ask_clarification, execution will be interrupted automatically
+</span><span id="__span-8-43"><a id="__codelineno-8-43" name="__codelineno-8-43" href="#__codelineno-8-43"></a>- ✅ Wait for user response - do NOT continue with assumptions
+</span><span id="__span-8-44"><a id="__codelineno-8-44" name="__codelineno-8-44" href="#__codelineno-8-44"></a>
+</span><span id="__span-8-45"><a id="__codelineno-8-45" name="__codelineno-8-45" href="#__codelineno-8-45"></a>**How to Use:**
+</span><span id="__span-8-46"><a id="__codelineno-8-46" name="__codelineno-8-46" href="#__codelineno-8-46"></a>```python
+</span><span id="__span-8-47"><a id="__codelineno-8-47" name="__codelineno-8-47" href="#__codelineno-8-47"></a>ask_clarification(
+</span><span id="__span-8-48"><a id="__codelineno-8-48" name="__codelineno-8-48" href="#__codelineno-8-48"></a>    question=&quot;Your specific question here?&quot;,
+</span><span id="__span-8-49"><a id="__codelineno-8-49" name="__codelineno-8-49" href="#__codelineno-8-49"></a>    clarification_type=&quot;missing_info&quot;,  # or other type
+</span><span id="__span-8-50"><a id="__codelineno-8-50" name="__codelineno-8-50" href="#__codelineno-8-50"></a>    context=&quot;Why you need this information&quot;,  # optional but recommended
+</span><span id="__span-8-51"><a id="__codelineno-8-51" name="__codelineno-8-51" href="#__codelineno-8-51"></a>    options=[&quot;option1&quot;, &quot;option2&quot;]  # optional, for choices
+</span><span id="__span-8-52"><a id="__codelineno-8-52" name="__codelineno-8-52" href="#__codelineno-8-52"></a>)
 </span></code></pre></div>
 <p><strong>Example:</strong>
 User: "Deploy the application"
@@ -1604,45 +1638,116 @@ You (action): ask_clarification(
 <p>User: "staging"
 You: "Deploying to staging..." [proceed]
 </clarification_system>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>---
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>## 5.4 `&lt;clarification_system&gt;` 深度解析
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>### 工作流优先级声明
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>&gt; **中文附注**：
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>&gt;
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>&gt; ```
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>&gt; &lt;clarification_system&gt;
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>&gt; **工作流优先级：澄清 → 计划 → 行动**
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>&gt; 1. **首先**：在思考中分析请求——识别不清晰、缺失或模糊的内容
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>&gt; 2. **其次**：如果需要澄清，立即调用 `ask_clarification` 工具——不得开始工作
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>&gt; 3. **其三**：只有在所有澄清解决后，才进行规划和执行
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>&gt;
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>&gt; **关键规则：澄清始终先于行动。绝不在开始工作后才在执行中途澄清。**
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>&gt;
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>&gt; **强制澄清场景——在以下情况下开始工作之前，你必须调用 ask_clarification：**
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>&gt;
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>&gt; 1. **缺失信息**（`missing_info`）：未提供必要细节
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>&gt;    - 示例：用户说&quot;创建一个网页爬虫&quot;但未指定目标网站
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>&gt;    - 示例：&quot;部署应用&quot;但未指定环境
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>&gt;    - **必要操作**：调用 ask_clarification 获取缺失信息
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>&gt;
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>&gt; 2. **模糊需求**（`ambiguous_requirement`）：存在多种有效解释
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>&gt;    - 示例：&quot;优化代码&quot;可以指性能、可读性或内存使用
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a>&gt;    - 示例：&quot;让它更好&quot;不清楚要改善哪个方面
+</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>&gt;    - **必要操作**：调用 ask_clarification 明确具体需求
+</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a>&gt;
+</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a>&gt; 3. **方案选择**（`approach_choice`）：存在多种有效方案
+</span><span id="__span-9-25"><a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>&gt;    - 示例：&quot;添加认证&quot;可以使用 JWT、OAuth、基于会话或 API 密钥
+</span><span id="__span-9-26"><a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a>&gt;    - 示例：&quot;存储数据&quot;可以使用数据库、文件、缓存等
+</span><span id="__span-9-27"><a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a>&gt;    - **必要操作**：调用 ask_clarification 让用户选择方案
+</span><span id="__span-9-28"><a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>&gt;
+</span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a>&gt; 4. **风险操作**（`risk_confirmation`）：破坏性操作需要确认
+</span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a>&gt;    - 示例：删除文件、修改生产配置、数据库操作
+</span><span id="__span-9-31"><a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a>&gt;    - 示例：覆盖现有代码或数据
+</span><span id="__span-9-32"><a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a>&gt;    - **必要操作**：调用 ask_clarification 获取明确确认
+</span><span id="__span-9-33"><a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a>&gt;
+</span><span id="__span-9-34"><a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a>&gt; 5. **建议**（`suggestion`）：你有推荐方案但需要审批
+</span><span id="__span-9-35"><a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a>&gt;    - 示例：&quot;我建议重构这段代码。我应该继续吗？&quot;
+</span><span id="__span-9-36"><a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a>&gt;    - **必要操作**：调用 ask_clarification 获取审批
+</span><span id="__span-9-37"><a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a>&gt;
+</span><span id="__span-9-38"><a id="__codelineno-9-38" name="__codelineno-9-38" href="#__codelineno-9-38"></a>&gt; **严格执行：**
+</span><span id="__span-9-39"><a id="__codelineno-9-39" name="__codelineno-9-39" href="#__codelineno-9-39"></a>&gt; - ❌ 不得先开始工作再在执行中途要求澄清——先澄清
+</span><span id="__span-9-40"><a id="__codelineno-9-40" name="__codelineno-9-40" href="#__codelineno-9-40"></a>&gt; - ❌ 不得以&quot;效率&quot;为由跳过澄清——准确性比速度更重要
+</span><span id="__span-9-41"><a id="__codelineno-9-41" name="__codelineno-9-41" href="#__codelineno-9-41"></a>&gt; - ❌ 信息缺失时不得做假设——始终询问
+</span><span id="__span-9-42"><a id="__codelineno-9-42" name="__codelineno-9-42" href="#__codelineno-9-42"></a>&gt; - ❌ 不得凭猜测继续——停下来，先调用 ask_clarification
+</span><span id="__span-9-43"><a id="__codelineno-9-43" name="__codelineno-9-43" href="#__codelineno-9-43"></a>&gt; - ✅ 在思考中分析请求 → 识别不清晰之处 → 在任何行动之前询问
+</span><span id="__span-9-44"><a id="__codelineno-9-44" name="__codelineno-9-44" href="#__codelineno-9-44"></a>&gt; - ✅ 如果在思考中识别出需要澄清，必须立即调用工具
+</span><span id="__span-9-45"><a id="__codelineno-9-45" name="__codelineno-9-45" href="#__codelineno-9-45"></a>&gt; - ✅ 调用 ask_clarification 后，执行将自动中断
+</span><span id="__span-9-46"><a id="__codelineno-9-46" name="__codelineno-9-46" href="#__codelineno-9-46"></a>&gt; - ✅ 等待用户回应——不得凭假设继续
+</span><span id="__span-9-47"><a id="__codelineno-9-47" name="__codelineno-9-47" href="#__codelineno-9-47"></a>&gt;
+</span><span id="__span-9-48"><a id="__codelineno-9-48" name="__codelineno-9-48" href="#__codelineno-9-48"></a>&gt; **使用示例：**
+</span><span id="__span-9-49"><a id="__codelineno-9-49" name="__codelineno-9-49" href="#__codelineno-9-49"></a>&gt;
+</span><span id="__span-9-50"><a id="__codelineno-9-50" name="__codelineno-9-50" href="#__codelineno-9-50"></a>&gt; 用户：&quot;部署应用&quot;
+</span><span id="__span-9-51"><a id="__codelineno-9-51" name="__codelineno-9-51" href="#__codelineno-9-51"></a>&gt; 你（思考中）：缺少环境信息——我必须要求澄清
+</span><span id="__span-9-52"><a id="__codelineno-9-52" name="__codelineno-9-52" href="#__codelineno-9-52"></a>&gt; 你（行动）：ask_clarification(
+</span><span id="__span-9-53"><a id="__codelineno-9-53" name="__codelineno-9-53" href="#__codelineno-9-53"></a>&gt;     question=&quot;应该部署到哪个环境？&quot;,
+</span><span id="__span-9-54"><a id="__codelineno-9-54" name="__codelineno-9-54" href="#__codelineno-9-54"></a>&gt;     clarification_type=&quot;approach_choice&quot;,
+</span><span id="__span-9-55"><a id="__codelineno-9-55" name="__codelineno-9-55" href="#__codelineno-9-55"></a>&gt;     context=&quot;我需要知道目标环境以进行正确配置&quot;,
+</span><span id="__span-9-56"><a id="__codelineno-9-56" name="__codelineno-9-56" href="#__codelineno-9-56"></a>&gt;     options=[&quot;development&quot;, &quot;staging&quot;, &quot;production&quot;]
+</span><span id="__span-9-57"><a id="__codelineno-9-57" name="__codelineno-9-57" href="#__codelineno-9-57"></a>&gt; )
+</span><span id="__span-9-58"><a id="__codelineno-9-58" name="__codelineno-9-58" href="#__codelineno-9-58"></a>&gt; [执行中断——等待用户回应]
+</span><span id="__span-9-59"><a id="__codelineno-9-59" name="__codelineno-9-59" href="#__codelineno-9-59"></a>&gt;
+</span><span id="__span-9-60"><a id="__codelineno-9-60" name="__codelineno-9-60" href="#__codelineno-9-60"></a>&gt; 用户：&quot;staging&quot;
+</span><span id="__span-9-61"><a id="__codelineno-9-61" name="__codelineno-9-61" href="#__codelineno-9-61"></a>&gt; 你：&quot;正在部署到 staging...&quot; [继续执行]
+</span><span id="__span-9-62"><a id="__codelineno-9-62" name="__codelineno-9-62" href="#__codelineno-9-62"></a>&gt; &lt;/clarification_system&gt;
+</span><span id="__span-9-63"><a id="__codelineno-9-63" name="__codelineno-9-63" href="#__codelineno-9-63"></a>&gt; ```
+</span><span id="__span-9-64"><a id="__codelineno-9-64" name="__codelineno-9-64" href="#__codelineno-9-64"></a>
+</span><span id="__span-9-65"><a id="__codelineno-9-65" name="__codelineno-9-65" href="#__codelineno-9-65"></a>---
+</span><span id="__span-9-66"><a id="__codelineno-9-66" name="__codelineno-9-66" href="#__codelineno-9-66"></a>
+</span><span id="__span-9-67"><a id="__codelineno-9-67" name="__codelineno-9-67" href="#__codelineno-9-67"></a>## 5.4 `&lt;clarification_system&gt;` 深度解析
+</span><span id="__span-9-68"><a id="__codelineno-9-68" name="__codelineno-9-68" href="#__codelineno-9-68"></a>
+</span><span id="__span-9-69"><a id="__codelineno-9-69" name="__codelineno-9-69" href="#__codelineno-9-69"></a>### 工作流优先级声明
 </span></code></pre></div>
 <strong>WORKFLOW PRIORITY: CLARIFY → PLAN → ACT</strong>
 1. <strong>FIRST</strong>: Analyze the request in your thinking...
 2. <strong>SECOND</strong>: If clarification is needed, call <code>ask_clarification</code> tool IMMEDIATELY...
 3. <strong>THIRD</strong>: Only after all clarifications are resolved, proceed with planning and execution
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>这个三步工作流把澄清的时序编码进了模型的决策流程。关键词：
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>- `FIRST / SECOND / THIRD`：明确的数字顺序，不允许跳步
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>- `IMMEDIATELY`：一旦识别出需要澄清，不要做任何其他动作
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>- `Only after all clarifications are resolved`：强调澄清的完整性，一次性解决所有问题
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>对比常见的弱约束写法：&quot;if you are unsure, you can ask the user for clarification&quot;。这种写法把澄清变成了可选项（&quot;can&quot;），还可以推迟（&quot;if you are unsure&quot;这个条件很容易被乐观估计掩盖）。`&lt;clarification_system&gt;` 把澄清变成了强制的、有时序的工作流步骤。
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>### 命名场景模式（Named Scenario Pattern）
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>段落的核心是五个具名场景：
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
-</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>| 场景名 | 标识符 | 触发条件 |
-</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>|--------|--------|---------|
-</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>| Missing Information | `missing_info` | 必要信息未提供 |
-</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>| Ambiguous Requirements | `ambiguous_requirement` | 多种有效解读 |
-</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>| Approach Choices | `approach_choice` | 多种有效方案 |
-</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>| Risky Operations | `risk_confirmation` | 破坏性操作 |
-</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>| Suggestions | `suggestion` | 有建议需要审批 |
-</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>
-</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>每个场景都有相同的结构：**场景名（标识符）+ 描述 + 两个例子 + REQUIRED ACTION**。
-</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a>
-</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>这个结构的威力在于：
-</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a>- 场景名是英文标识符，与工具参数 `clarification_type` 直接对应，形成了**工具调用与场景识别的自然映射**
-</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a>- 每个场景有两个例子，而不是一个——两个例子可以帮助模型理解类别的宽度（什么是典型的 `approach_choice`，什么不是）
-</span><span id="__span-9-25"><a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>- &quot;REQUIRED ACTION&quot;前缀标记了强制性，而不是建议性
-</span><span id="__span-9-26"><a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a>
-</span><span id="__span-9-27"><a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a>第三章介绍的命名场景模式在这里得到了完整体现：通过给不同类型的&quot;不清楚&quot;命名，把模糊的泛化决策变成了可枚举的分类问题。
-</span><span id="__span-9-28"><a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>
-</span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a>### STRICT ENFORCEMENT：❌/✅ 对比格式
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>&gt; **中文附注**：
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>&gt;
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>&gt; **工作流优先级：澄清 → 计划 → 行动**
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>&gt; 1. **首先**：在思考中分析请求……
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>&gt; 2. **其次**：如果需要澄清，立即调用 `ask_clarification` 工具……
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>&gt; 3. **其三**：只有在所有澄清解决后，才进行规划和执行
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>这个三步工作流把澄清的时序编码进了模型的决策流程。关键词：
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>- `FIRST / SECOND / THIRD`：明确的数字顺序，不允许跳步
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>- `IMMEDIATELY`：一旦识别出需要澄清，不要做任何其他动作
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>- `Only after all clarifications are resolved`：强调澄清的完整性，一次性解决所有问题
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>对比常见的弱约束写法：&quot;if you are unsure, you can ask the user for clarification&quot;。这种写法把澄清变成了可选项（&quot;can&quot;），还可以推迟（&quot;if you are unsure&quot;这个条件很容易被乐观估计掩盖）。`&lt;clarification_system&gt;` 把澄清变成了强制的、有时序的工作流步骤。
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>### 命名场景模式（Named Scenario Pattern）
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>段落的核心是五个具名场景：
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>
+</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>| 场景名 | 标识符 | 触发条件 |
+</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>|--------|--------|---------|
+</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a>| Missing Information | `missing_info` | 必要信息未提供 |
+</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a>| Ambiguous Requirements | `ambiguous_requirement` | 多种有效解读 |
+</span><span id="__span-10-23"><a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a>| Approach Choices | `approach_choice` | 多种有效方案 |
+</span><span id="__span-10-24"><a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a>| Risky Operations | `risk_confirmation` | 破坏性操作 |
+</span><span id="__span-10-25"><a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a>| Suggestions | `suggestion` | 有建议需要审批 |
+</span><span id="__span-10-26"><a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a>
+</span><span id="__span-10-27"><a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a>每个场景都有相同的结构：**场景名（标识符）+ 描述 + 两个例子 + REQUIRED ACTION**。
+</span><span id="__span-10-28"><a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a>
+</span><span id="__span-10-29"><a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a>这个结构的威力在于：
+</span><span id="__span-10-30"><a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a>- 场景名是英文标识符，与工具参数 `clarification_type` 直接对应，形成了**工具调用与场景识别的自然映射**
+</span><span id="__span-10-31"><a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a>- 每个场景有两个例子，而不是一个——两个例子可以帮助模型理解类别的宽度（什么是典型的 `approach_choice`，什么不是）
+</span><span id="__span-10-32"><a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a>- &quot;REQUIRED ACTION&quot;前缀标记了强制性，而不是建议性
+</span><span id="__span-10-33"><a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a>
+</span><span id="__span-10-34"><a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a>第三章介绍的命名场景模式在这里得到了完整体现：通过给不同类型的&quot;不清楚&quot;命名，把模糊的泛化决策变成了可枚举的分类问题。
+</span><span id="__span-10-35"><a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a>
+</span><span id="__span-10-36"><a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a>### STRICT ENFORCEMENT：❌/✅ 对比格式
 </span></code></pre></div>
 <strong>STRICT ENFORCEMENT:</strong>
 - ❌ DO NOT start working and then ask for clarification mid-execution - clarify FIRST
@@ -1653,19 +1758,35 @@ You: "Deploying to staging..." [proceed]
 - ✅ If you identify the need for clarification in your thinking, you MUST call the tool IMMEDIATELY
 - ✅ After calling ask_clarification, execution will be interrupted automatically
 - ✅ Wait for user response - do NOT continue with assumptions
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>❌ 列表和 ✅ 列表的结构对称，但语义方向相反：❌ 明确列出禁止行为，✅ 列出正确行为。
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>特别值得注意的是 ❌ 列表的设计细节：
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&gt; **中文附注**：
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>&gt;
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>&gt; **严格执行：**
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>&gt; - ❌ 不得先开始工作再在执行中途要求澄清——先澄清
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>&gt; - ❌ 不得以&quot;效率&quot;为由跳过澄清——准确性比速度更重要
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>&gt; - ❌ 信息缺失时不得做假设——始终询问
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>&gt; - ❌ 不得凭猜测继续——停下来，先调用 ask_clarification
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>&gt; - ✅ 在思考中分析请求 → 识别不清晰之处 → 在任何行动之前询问
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>&gt; - ✅ 如果在思考中识别出需要澄清，必须立即调用工具
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>&gt; - ✅ 调用 ask_clarification 后，执行将自动中断
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>&gt; - ✅ 等待用户回应——不得凭假设继续
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>❌ 列表和 ✅ 列表的结构对称，但语义方向相反：❌ 明确列出禁止行为，✅ 列出正确行为。
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>特别值得注意的是 ❌ 列表的设计细节：
 </span></code></pre></div>
 - ❌ DO NOT skip clarification for "efficiency" - accuracy matters more than speed
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>加引号的 `&quot;efficiency&quot;` 是一个特意预判的反驳。在实际推理中，模型可能会出现&quot;为了效率跳过澄清&quot;的自我合理化——这条规则提前封堵了这个借口，并给出了反驳理由（&quot;accuracy matters more than speed&quot;）。
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>&gt; **中文附注**：❌ 不得以&quot;效率&quot;为由跳过澄清——准确性比速度更重要
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>加引号的 `&quot;efficiency&quot;` 是一个特意预判的反驳。在实际推理中，模型可能会出现&quot;为了效率跳过澄清&quot;的自我合理化——这条规则提前封堵了这个借口，并给出了反驳理由（&quot;accuracy matters more than speed&quot;）。
 </span></code></pre></div>
 - ❌ DO NOT proceed with guesses - STOP and call ask_clarification first
-<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>&quot;STOP&quot;用全大写，模仿了命令行中的紧急停止信号，在文本中制造了视觉上的&quot;刹车&quot;效果。
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>### 完整示例的价值
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>段落末尾的完整示例：
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>&gt; **中文附注**：❌ 不得凭猜测继续——停下来，先调用 ask_clarification
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>&quot;STOP&quot;用全大写，模仿了命令行中的紧急停止信号，在文本中制造了视觉上的&quot;刹车&quot;效果。
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>### 完整示例的价值
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>段落末尾的完整示例：
 </span></code></pre></div>
 User: "Deploy the application"
 You (thinking): Missing environment info - I MUST ask for clarification
@@ -1676,18 +1797,18 @@ You (action): ask_clarification(
     options=["development", "staging", "production"]
 )
 [Execution stops - wait for user response]
-<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>这个示例做了三件事：
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>1. 展示了如何在&quot;thinking&quot;中识别出澄清需求（`Missing environment info - I MUST ask for clarification`）
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>2. 展示了工具调用的正确格式，包括 `context` 和 `options` 参数的使用
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>3. 展示了调用后的行为（`[Execution stops - wait for user response]`）——明确了这不是一个返回值的函数调用，而是一个触发中断的操作
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>few-shot 示例在 Prompt 工程中是高价值的 token 投入，因为它直接示范了期望的行为，比任何形式的描述规则都更直接地影响模型的输出格式。
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>---
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>
-</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>## 5.5 P-21：`ask_clarification` 工具描述（完整原文）
-</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>
-</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>`&lt;clarification_system&gt;` 定义了**何时**需要澄清，而 P-21 定义了工具本身的行为和最佳实践。两者从不同角度强化了同一个机制。
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>这个示例做了三件事：
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>1. 展示了如何在&quot;thinking&quot;中识别出澄清需求（`Missing environment info - I MUST ask for clarification`）
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>2. 展示了工具调用的正确格式，包括 `context` 和 `options` 参数的使用
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>3. 展示了调用后的行为（`[Execution stops - wait for user response]`）——明确了这不是一个返回值的函数调用，而是一个触发中断的操作
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>few-shot 示例在 Prompt 工程中是高价值的 token 投入，因为它直接示范了期望的行为，比任何形式的描述规则都更直接地影响模型的输出格式。
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>---
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>## 5.5 P-21：`ask_clarification` 工具描述（完整原文）
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>`&lt;clarification_system&gt;` 定义了**何时**需要澄清，而 P-21 定义了工具本身的行为和最佳实践。两者从不同角度强化了同一个机制。
 </span></code></pre></div>
 Ask the user for clarification when you need more information to proceed.</p>
 <p>Use this tool when you encounter situations where you cannot proceed without user input:</p>
@@ -1712,21 +1833,52 @@ Wait for the user's response before continuing.</p>
 - Don't make assumptions when clarification is needed
 - For risky operations, ALWAYS ask for confirmation
 - After calling this tool, execution will be interrupted automatically
-<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>### P-21 与 `&lt;clarification_system&gt;` 的分工
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>这两段文本高度相关——都列出了五种场景，都强调中断行为——但它们服务于不同的目的：
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
-</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>| 维度 | `&lt;clarification_system&gt;`（系统 Prompt） | P-21（工具 docstring） |
-</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>|------|---------------------------------------|----------------------|
-</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>| **加载时机** | Agent 构建时（静态）| 工具绑定时（LangChain 解析） |
-</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>| **作用域** | 决策规则（何时调用工具）| 工具行为（如何调用工具）|
-</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>| **读者** | 规划阶段的 LLM | 工具调用阶段的 LLM |
-</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>| **细节重点** | 工作流顺序、禁止行为 | 最佳实践、one-at-a-time |
-</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>
-</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>P-21 的&quot;Best practices&quot;中有一条特别值得注意：
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>&gt; **中文附注**：
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>&gt;
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>&gt; 当你需要更多信息才能继续时，向用户请求澄清。
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>&gt;
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>&gt; 在以下情况下使用此工具（无法在不获取用户输入的情况下继续）：
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>&gt;
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>&gt; - **缺失信息**：未提供必要细节（如文件路径、URL、具体需求）
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>&gt; - **模糊需求**：存在多种有效解释
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>&gt; - **方案选择**：存在多种有效方案，需要用户偏好
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>&gt; - **风险操作**：需要明确确认的破坏性操作（如删除文件、修改生产环境）
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>&gt; - **建议**：你有推荐方案，但在继续前需要用户审批
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>&gt;
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>&gt; 执行将被中断，问题将呈现给用户。在继续之前等待用户回应。
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>&gt;
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>&gt; 何时使用 ask_clarification：
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>&gt; - 你需要用户请求中未提供的信息
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>&gt; - 需求可以有多种解释
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>&gt; - 存在多种有效的实现方案
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>&gt; - 你即将执行潜在危险的操作
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>&gt; - 你有推荐方案但需要用户审批
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>&gt;
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a>&gt; 最佳实践：
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>&gt; - 每次只问**一个**澄清问题，保持清晰
+</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>&gt; - 问题要具体明确
+</span><span id="__span-15-25"><a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a>&gt; - 需要澄清时不要做假设
+</span><span id="__span-15-26"><a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a>&gt; - 对风险操作，**始终**请求确认
+</span><span id="__span-15-27"><a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a>&gt; - 调用此工具后，执行将自动中断
+</span><span id="__span-15-28"><a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a>
+</span><span id="__span-15-29"><a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a>### P-21 与 `&lt;clarification_system&gt;` 的分工
+</span><span id="__span-15-30"><a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a>
+</span><span id="__span-15-31"><a id="__codelineno-15-31" name="__codelineno-15-31" href="#__codelineno-15-31"></a>这两段文本高度相关——都列出了五种场景，都强调中断行为——但它们服务于不同的目的：
+</span><span id="__span-15-32"><a id="__codelineno-15-32" name="__codelineno-15-32" href="#__codelineno-15-32"></a>
+</span><span id="__span-15-33"><a id="__codelineno-15-33" name="__codelineno-15-33" href="#__codelineno-15-33"></a>| 维度 | `&lt;clarification_system&gt;`（系统 Prompt） | P-21（工具 docstring） |
+</span><span id="__span-15-34"><a id="__codelineno-15-34" name="__codelineno-15-34" href="#__codelineno-15-34"></a>|------|---------------------------------------|----------------------|
+</span><span id="__span-15-35"><a id="__codelineno-15-35" name="__codelineno-15-35" href="#__codelineno-15-35"></a>| **加载时机** | Agent 构建时（静态）| 工具绑定时（LangChain 解析） |
+</span><span id="__span-15-36"><a id="__codelineno-15-36" name="__codelineno-15-36" href="#__codelineno-15-36"></a>| **作用域** | 决策规则（何时调用工具）| 工具行为（如何调用工具）|
+</span><span id="__span-15-37"><a id="__codelineno-15-37" name="__codelineno-15-37" href="#__codelineno-15-37"></a>| **读者** | 规划阶段的 LLM | 工具调用阶段的 LLM |
+</span><span id="__span-15-38"><a id="__codelineno-15-38" name="__codelineno-15-38" href="#__codelineno-15-38"></a>| **细节重点** | 工作流顺序、禁止行为 | 最佳实践、one-at-a-time |
+</span><span id="__span-15-39"><a id="__codelineno-15-39" name="__codelineno-15-39" href="#__codelineno-15-39"></a>
+</span><span id="__span-15-40"><a id="__codelineno-15-40" name="__codelineno-15-40" href="#__codelineno-15-40"></a>P-21 的&quot;Best practices&quot;中有一条特别值得注意：
 </span></code></pre></div>
 - Ask ONE clarification at a time for clarity
 ```</p>
+<blockquote>
+<p><strong>中文附注</strong>：每次只问<strong>一个</strong>澄清问题，保持清晰</p>
+</blockquote>
 <p>这条规则在 <code>&lt;clarification_system&gt;</code> 中没有出现。它解决了一个不同的问题：即使用户愿意回答澄清问题，如果一次问太多问题，用户体验也会变差。"ONE clarification at a time"是体验设计原则，不是正确性规则。</p>
 <p>这种分工体现了双层 Prompt 设计的优势：系统 Prompt 关注"Agent 应该做什么决策"，工具描述关注"如何正确使用这个工具"。</p>
 <hr />

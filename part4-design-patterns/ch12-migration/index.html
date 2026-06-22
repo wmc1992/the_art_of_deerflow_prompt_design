@@ -1839,6 +1839,19 @@
 </span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>- The information can be inferred from context
 </span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>- A reasonable default exists and the user hasn&#39;t indicated preference
 </span></code></pre></div>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>何时要求澄清：
+1. <code>missing_required_param</code>（缺少必要参数）：任务无法在没有特定值的情况下继续
+   （示例："创建报告"——覆盖哪个时间段？）
+2. <code>ambiguous_target</code>（目标模糊）：指令可能适用于多个对象
+   （示例："删除文件"——哪个文件？）
+3. <code>irreversible_action</code>（不可逆操作）：操作无法撤销且未得到明确确认
+   （示例："清理数据库"涉及删除记录）</p>
+<p>以下情况<strong>不要</strong>询问：
+- 信息可以从上下文中推断
+- 存在合理的默认值且用户未表明偏好</p>
+</blockquote>
 <p><strong>预期效果</strong>：模型的澄清行为从"随机"变为"可预测"。测试可以针对每个场景类型验证正确行为。</p>
 <h3 id="5">阶段 5：内容按需加载（成本高，解决规模问题）<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
 <p><strong>对应模式</strong>：渐进式加载（模式六）</p>
@@ -1857,6 +1870,16 @@
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>(Use /skill-name to activate a skill and load its full guide)
 </span></code></pre></div></p>
 </li>
+</ol>
+<blockquote>
+<p><strong>中文附注</strong>：</p>
+<p>可用技能：
+- <strong>sql</strong>：执行 SQL 查询并分析数据。（使用：/sql）
+- <strong>viz</strong>：创建数据可视化图表。（使用：/viz）
+- <strong>report</strong>：生成格式化报告。（使用：/report）
+（输入 /技能名称 以激活技能并加载完整指南）</p>
+</blockquote>
+<ol>
 <li>
 <p>实现 <code>load_skill(name)</code> 工具，供模型在被激活时调用：
    <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">load_skill</span><span class="p">(</span><span class="n">skill_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
